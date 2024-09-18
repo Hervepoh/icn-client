@@ -1,0 +1,43 @@
+import axios from 'axios';
+import { toast } from "sonner"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+
+type RequestType = any
+
+export const useCreateBank = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    ResponseType,
+    Error,
+    RequestType
+  >({
+    mutationFn: async (json) => {
+
+      const  config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://localhost:8000/api/v1/banks',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true, // Set this to true
+        data: json
+      };
+      const response = await axios.request(config);
+      return response.data?.data;
+      
+    },
+    onSuccess: () => {
+      toast.success("Bank has been created.")
+      queryClient.invalidateQueries({ queryKey: ["banks"] });
+
+    },
+    onError: () => {
+      toast.error("Failed to create bank.")
+    },
+  });
+
+  return mutation;
+};
