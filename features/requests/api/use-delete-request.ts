@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Cookies from 'js-cookie';
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 export const useDeleteRequest = (id?: string) => {
   const queryClient = useQueryClient();
@@ -10,8 +12,11 @@ export const useDeleteRequest = (id?: string) => {
     Error
   >({
     mutationFn: async () => {
-      const response = await axios.delete(`http://localhost:8000/api/v1/requests/${id}`, {
-        withCredentials: true,
+      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, {
+        headers: {
+          'Authorization': Cookies.get('access_token'), // Ajouter le token dans l'en-tête
+        },
+        withCredentials: true, // Assurer l'envoi des cookies
       });
       return response.data;
     },

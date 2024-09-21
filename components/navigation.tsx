@@ -25,7 +25,6 @@ export const Navigation = (props: Props) => {
 
     const router = useRouter();
     const pathname = usePathname();
-    console.log("pathname",pathname);
     const isMobile = useMedia("(max-width: 1024px)", false);
     const onClick = (href: string) => {
         router.replace(href);

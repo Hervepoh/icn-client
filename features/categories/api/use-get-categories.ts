@@ -1,3 +1,4 @@
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
 
@@ -10,7 +11,7 @@ export const useGetCategories = () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://localhost:8000/api/v1/categories',
+        url: `${NEXT_PUBLIC_SERVER_URI}/categories`,
         headers: {
         },
         withCredentials: true, // Set this to true

@@ -1,9 +1,15 @@
 "use client";
+
 import * as z from "zod";
-import React, { useEffect, useState, useTransition } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { toast } from "sonner"
+import Cookies from "js-cookie";
+import React, { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { LuLoader2 } from "react-icons/lu";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
@@ -21,9 +27,6 @@ import { FormSuccess } from "./form-message-success";
 import { CardWrapper } from "./card-wrapper";
 
 import { URI_REGISTER } from "@/config/route.config";
-import { useLoginMutation } from "@/lib/redux/features/auth/authApi";
-import { toast } from "sonner"
-import { redirect, useRouter } from "next/navigation";
 
 
 type Props = {};
@@ -33,21 +36,6 @@ export const LoginForm = (props: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>("");
   const [successMessage, setSuccessMessage] = useState<string | undefined>("");
   const router = useRouter();
-
-  const [login, { isSuccess, error }] = useLoginMutation();
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Login Successfully!");
-      router.push("/");
-    }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, error]);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -68,18 +56,28 @@ export const LoginForm = (props: Props) => {
       setErrorMessage("");
       setSuccessMessage("");
       // or you can use api route
-      // axios.post('/api/login', values).then((response) => { setPost(response.data); });
-      // fetch('https://jsonplaceholder.typicode.com/todos/1').then(response => response.json()).then(json => console.log(json));
-     
-      // using server action
-      // login(values)
-      // .then(data => { 
-      //   console.log(data);
-      //   setErrorMessage(data.error);
-      //   setSuccess(data.success);
-      //  });
+      axios.post('/api/login', values).then((response) => {
 
-      await login(values);
+        // Stocker dans les cookies
+        Cookies.set('access_token', response.data.accessToken, {
+          expires: 2 / 24,
+          sameSite: 'lax',
+        });
+        Cookies.set('refresh_token', response.data.refreshToken, {
+          expires: 1,
+          sameSite: 'lax'
+        });
+
+        setSuccessMessage("Login Successfully!");
+        toast.success("Login Successfully!");
+        router.push("/");
+
+      }).catch((error) => {
+        const message = error.response?.data?.message || 'Something went wrong';
+        setErrorMessage(message)
+        toast.error(message);
+
+      });
     });
   };
 
@@ -87,7 +85,7 @@ export const LoginForm = (props: Props) => {
     <CardWrapper
       headerLabel=""
       backButtonLabel="Don't have an account ?"
-      backButtonHref={ URI_REGISTER }
+      backButtonHref={URI_REGISTER}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} method="POST" className="space-y-6">
@@ -148,3 +146,6 @@ export const LoginForm = (props: Props) => {
     </CardWrapper>
   );
 };
+
+
+

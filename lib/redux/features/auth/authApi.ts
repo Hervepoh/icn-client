@@ -1,3 +1,4 @@
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { apiSlice } from "../api/apiSlice";
 import { userLoggedIn, userLoggedOut, userRegistration } from "./authSlice";
 
@@ -13,7 +14,7 @@ export const authApi = apiSlice.injectEndpoints({
     // endpoints here
     register: builder.mutation<RegistrationResponse, RegistrationData>({
       query: (data) => ({
-        url: "http://localhost:8000/api/v1/registration",
+        url:  `${NEXT_PUBLIC_SERVER_URI}/auth/register`,
         method: "POST",
         body: data,
         credentials: "include" as const,
@@ -33,7 +34,7 @@ export const authApi = apiSlice.injectEndpoints({
     }),
     activation: builder.mutation({
       query: ({ activation_token, activation_code }) => ({
-        url: "http://localhost:8000/api/v1/activation",
+        url:  `${NEXT_PUBLIC_SERVER_URI}/auth/activate`,
         method: "POST",
         body: {
           activation_token,
@@ -43,7 +44,7 @@ export const authApi = apiSlice.injectEndpoints({
     }),
     login: builder.mutation({
       query: ({ email, password }) => ({
-        url: "http://localhost:8000/api/v1/login",
+        url: `${NEXT_PUBLIC_SERVER_URI}/auth/login`,
         method: "POST",
         body: {
           email,
@@ -67,7 +68,7 @@ export const authApi = apiSlice.injectEndpoints({
     }),
     socialAuth: builder.mutation({
       query: ({ email, name, avatar }) => ({
-        url: "http://localhost:8000/api/v1/social-auth",
+        url: `${NEXT_PUBLIC_SERVER_URI}/auth/social`,
         method: "POST",
         body: {
           email,
@@ -86,13 +87,13 @@ export const authApi = apiSlice.injectEndpoints({
             })
           );
         } catch (error: any) {
-          console.log(error);
+          console.log("/auth/social",error);
         }
       },
     }),
     logOut: builder.query({
       query: () => ({
-        url: "http://localhost:8000/api/v1/logout",
+        url: `${NEXT_PUBLIC_SERVER_URI}/auth/logout`,
         method: "POST",
         credentials: "include" as const,
       }),
@@ -102,7 +103,7 @@ export const authApi = apiSlice.injectEndpoints({
             userLoggedOut()
           );
         } catch (error: any) {
-          console.log(error);
+          console.log("/auth/logout" ,error);
         }
       },
     }),

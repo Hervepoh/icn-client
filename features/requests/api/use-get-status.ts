@@ -1,18 +1,22 @@
-import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosRequestConfig } from "axios";
-import Cookies from "js-cookie";
 
-export const useGetUnpaidByInvoice = (value?: string) => {
+import { convertAmountFromMilliunits } from "@/lib/utils";
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import Cookies from "js-cookie";
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
+
+export const useGetStatus = (search?: string) => {
   const query = useQuery({
-    enabled: !!value,   // Fetch only if we have the id
-    queryKey: ["unpaid", { value }],
+    enabled: !!search,   // Fetch only if we have the id
+    queryKey: ["status", { search }],
     queryFn: async () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${value}`,
-        headers: {'Authorization': Cookies.get('access_token')},
+        url: `${NEXT_PUBLIC_SERVER_URI}/status${search}`,
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
         withCredentials: true, // Set this to true
         data: ''
       };
@@ -27,6 +31,7 @@ export const useGetUnpaidByInvoice = (value?: string) => {
           throw new Error('Une erreur inconnue s\'est produite');
         }
       }
+
     },
   });
 

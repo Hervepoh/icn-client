@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { status } from '@/config/status.config';
 import { useValidateRequest } from '@/features/requests/hooks/use-validate-request';
 import { useSelector } from 'react-redux';
+import { useUserStore } from '@/features/users/hooks/use-user-store';
+import { hasPermission } from '@/lib/utils';
 
 
 type Props = {
@@ -18,8 +20,7 @@ type Props = {
 }
 
 export const ActionsValidations = ({ id }: Props) => {
-    const { user } = useSelector((state: any) => state.auth); 
-
+    const { user } = useUserStore()
     const request = useValidateRequest();
     const [ValidationDialog, valid] = useValidate({
         id,
@@ -31,10 +32,10 @@ export const ActionsValidations = ({ id }: Props) => {
     const isPending = editMutation.isPending
 
     const handleValidation = async () => {
+        console.log("click on to valide")
         try {
             request.onOpen();
             const confirmed = await valid();
-            console.log("handleValidation")
             if (confirmed) {
                 console.log('good you confirm');
                 editMutation.mutate({ status: status[3] }, {
@@ -52,8 +53,10 @@ export const ActionsValidations = ({ id }: Props) => {
             // Handle the rejection
         }
     }
+    
 
-    if (user.role === 'validator' || user.role === 'admin') {
+
+    if (user && hasPermission(user,"TRANSACTION-VALIDATE")) {
         return (
             <>
                 <ValidationDialog />

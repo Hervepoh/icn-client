@@ -28,6 +28,8 @@ import { columns } from './columns';
 import { UploadButton } from './upload-button';
 import { ImportCard } from './import-card';
 import { useSelector } from 'react-redux';
+import { hasPermission } from '@/lib/utils';
+import { useUserStore } from '@/features/users/hooks/use-user-store';
 
 enum VARIANTS {
     LIST = "LIST",
@@ -43,7 +45,8 @@ const INITIAL_IMPORT_RESULTS = {
 type Props = {}
 
 export default function TransactionsPage(props: Props) {
-    const { user } = useSelector((state: any) => state.auth);
+    const { user } = useUserStore();
+
     const newRequest = useNewRequest()
     const createTransactionsQuery = useBulkCreateRequests();
     // const deleteTransactionsQuery = useBulkDeleteTransactions();
@@ -98,7 +101,7 @@ export default function TransactionsPage(props: Props) {
 
 
 
-    if (getTransactionsQuery.isLoading) {
+    if (!user || getTransactionsQuery.isLoading) {
         return (
             <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
                 <Card className='border-none drop-shadow-sm'>
@@ -131,9 +134,11 @@ export default function TransactionsPage(props: Props) {
             <Card className='border-none drop-shadow-sm'>
                 <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
                     <CardTitle className='text-xl line-clamp-1'>Transactions History</CardTitle>
-                    {
-                        (user.role === 'user' || user.role === 'admin') &&
-                        <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+
+                    <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+                        {
+                  
+                            (hasPermission(user, "TRANSACTION-CREATE","TRANSACTION-WRITE")) &&
                             <Button
                                 onClick={newRequest.onOpen}
                                 size="sm"
@@ -141,11 +146,15 @@ export default function TransactionsPage(props: Props) {
                                 <Plus className='size-4 mr-2' />
                                 Add New
                             </Button>
+                        }
+                        {
+                            (hasPermission(user, "TRANSACTION-BULKCREATE")) &&
                             <UploadButton
                                 onUpload={onUpload}
                             />
-                        </div>
-                    }
+                        }
+                    </div>
+
 
                 </CardHeader>
                 <CardContent>

@@ -125,7 +125,7 @@ export const SearchByFileForm = ({
                     //     const config: AxiosRequestConfig = {
                     //         method: 'get',
                     //         maxBodyLength: Infinity,
-                    //         url: `http://localhost:8000/api/v1/search-unpaid?by=invoice&value=${newData.invoice}`,
+                    //         url: ${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${newData.invoice}`,
                     //         headers: {},
                     //         withCredentials: true, // Set this to true
                     //         data: ''

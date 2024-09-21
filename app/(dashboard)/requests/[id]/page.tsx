@@ -122,7 +122,7 @@ export default function TransactionsDetails() {
 
     const handleDelete = (id: string) => {
         const newData = [...finalData];
-        setfinalData(newData.filter(r => r._id != id));
+        setfinalData(newData.filter(r => r.id != id));
         DeleteDetailTransactionsQuery.mutate(id, {
             onSuccess: () => {
                 console.log("success handleDelete")
@@ -152,7 +152,7 @@ export default function TransactionsDetails() {
         // Preparing updates datas
         const updates = newData.map((row) => ({
             updateOne: {
-                filter: { _id: row._id }, // utiliser l'ID de la ligne
+                filter: { id: row.id }, // utiliser l'ID de la ligne
                 update: {
                     selected: row.selected,
                     amountTopaid: row.amountTopaid
@@ -467,7 +467,7 @@ export default function TransactionsDetails() {
                                                                 <div className="flex items-center justify-center gap-x-1">
                                                                     <Button
                                                                         disabled={disable}
-                                                                        onClick={() => handleDelete(row._id)}
+                                                                        onClick={() => handleDelete(row.id)}
                                                                         size="sm"
                                                                         variant="ghost">
                                                                         <Trash className='size-5' />

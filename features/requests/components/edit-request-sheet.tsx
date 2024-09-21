@@ -22,6 +22,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
+import { useGetStatus } from "../api/use-get-status";
 
 
 // Form validation 
@@ -52,9 +53,9 @@ export function EditRequestSheet() {
     const payModeMutation = useCreatePayMode();
     const onCreatePayMode = (name: string) => payModeMutation.mutate({ name });
     const payModeOptions = (payModeQuery.data ?? []).map(
-        (payMode: { name: any; _id: any; }) => ({
+        (payMode: { name: any; id: any; }) => ({
             label: payMode.name,
-            value: payMode._id
+            value: payMode.id
         })
     );
 
@@ -62,9 +63,9 @@ export function EditRequestSheet() {
     const bankMutation = useCreateBank();
     const onCreateBank = (name: string) => bankMutation.mutate({ name });
     const bankOptions = (bankQuery.data ?? []).map(
-        (bank: { name: any; _id: any; }) => ({
+        (bank: { name: any; id: any; }) => ({
             label: bank.name,
-            value: bank._id
+            value: bank.id
         })
     );
 
@@ -78,17 +79,17 @@ export function EditRequestSheet() {
         transactionQuery.isLoading ||
         bankQuery.isLoading ||
         payModeQuery.isLoading
-
-    const defaultValues = transactionQuery.data
+    
+        const defaultValues = transactionQuery.data
         ? {
             name: transactionQuery.data.name,
             amount: transactionQuery.data.amount.toString(),
-            bank: transactionQuery.data.bank._id,
-            payment_date: transactionQuery.data.payment_date
-                ? new Date(transactionQuery.data.payment_date)
+            bank: transactionQuery.data.bankId,
+            payment_date: transactionQuery.data.paymentDate
+                ? new Date(transactionQuery.data.paymentDate)
                 : new Date(),
             
-            payment_mode: transactionQuery.data.payment_mode._id,
+            payment_mode: transactionQuery.data.paymentModeId,
             // categoryId: transactionQuery.data.categoryId,
             // notes: transactionQuery.data.notes,
         }

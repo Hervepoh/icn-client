@@ -1,6 +1,12 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+// Typage de l'état d'authentification
+interface AuthState {
+  token: string | null;
+  user: string | null; // Vous pouvez définir une interface pour l'utilisateur
+}
+
+const initialState: AuthState = {
   token: "",
   user: "",
 };

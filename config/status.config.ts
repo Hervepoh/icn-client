@@ -1,4 +1,5 @@
 import { CheckCircledIcon, CircleIcon, CrossCircledIcon, QuestionMarkCircledIcon, StopwatchIcon } from "@radix-ui/react-icons";
+import { NewspaperIcon, SandwichIcon, Trash2Icon } from "lucide-react";
 
 export const status = [
     'deleted',
@@ -16,37 +17,44 @@ export const statuses = [
     {
         value: 'deleted',
         label: 'Deleted',
-        icon: CrossCircledIcon,
+        icon: SandwichIcon,
+        iconColor: 'text-white',
     },
     {
         value: 'draft',
         label: 'Draft',
-        icon: QuestionMarkCircledIcon,
+        icon: Trash2Icon,
+        iconColor: 'text-white',
     },
     {
         value: 'initiated',
         label: 'Initiated',
-        icon: CircleIcon,
+        icon: NewspaperIcon,
+        iconColor: 'text-black',
     },
     {
         value: 'validated',
         label: 'Validated',
         icon: CheckCircledIcon,
+        iconColor: 'text-white',
     },
     {
         value: 'rejected',
         label: 'Rejected',
         icon: CrossCircledIcon,
+        iconColor: 'text-white',
     },
     {
         value: 'processing',
-        label: 'In Progress',
+        label: 'In process',
         icon: StopwatchIcon,
+        iconColor: 'text-white',
     },
     {
         value: 'treated',
         label: 'Treated',
         icon: CheckCircledIcon,
+        iconColor: 'text-white',
     },
 
 ]

@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
+import Cookies from 'js-cookie';
 
 
 const formSchema = z.object({
@@ -59,8 +61,8 @@ export const SearchByInvoiceForm = ({
             const config: AxiosRequestConfig = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `http://localhost:8000/api/v1/search-unpaid?by=invoice&value=${values.value}`,
-                headers: {},
+                url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${values.value}`,
+                headers: {'Authorization': Cookies.get('access_token')},
                 withCredentials: true, // Set this to true
                 data: ''
             };

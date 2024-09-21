@@ -9,7 +9,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Actions } from "./actions";
 
 interface ResponseType {
-  _id: string;
+  id: string;
   name: string;
 }
 
@@ -54,7 +54,7 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <Actions id={ row.original._id }/>
+      <Actions id={ row.original.id }/>
     ),
     enableSorting: false,
   }

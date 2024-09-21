@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from '@/components/date-picker';
 import { format } from 'date-fns';
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
+import Cookies from 'js-cookie';
 
 
 const formSchema = z.object({
@@ -65,12 +67,11 @@ export const SearchByRegroupForm = ({
             const config: AxiosRequestConfig = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `http://localhost:8000/api/v1/search-unpaid?by=regroup&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
-                headers: {},
-                withCredentials: true, // Set this to true
+                url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=regroup&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
+                headers: { 'Authorization': Cookies.get('access_token')},
+                withCredentials: true, 
                 data: ''
             };
-            console.log("config",config);
             try {
                 const response = await axios.request(config);
                 setInvoices(response.data.bills ?? []);

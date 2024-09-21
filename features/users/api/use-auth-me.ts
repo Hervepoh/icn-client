@@ -1,17 +1,19 @@
-import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosRequestConfig, AxiosError } from "axios";
-import Cookies from "js-cookie";
 
-export const useGetBank = (id?: string) => {
+import { convertAmountFromMilliunits } from "@/lib/utils";
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
+
+export const useAuthMe = () => {
   const query = useQuery({
-    enabled: !!id,   // Fetch only if we have the id
-    queryKey: ["bank", { id }],
+    queryKey: [Cookies.get('access_token')],
     queryFn: async () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/banks`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/auth/me`,
         headers: {
           'Authorization': Cookies.get('access_token')
         },
@@ -21,14 +23,16 @@ export const useGetBank = (id?: string) => {
 
       try {
         const response = await axios.request(config);
-        return response.data?.data;
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          throw error;
-        } else {
-          throw new Error('Une erreur inconnue s\'est produite');
+        return response.data;
+      } catch (error: any) {
+        if (error.response && error.response.status === 401) {
+          return null
         }
+
+        toast.error(error?.response?.data.message || "Something went wrong");
+
       }
+
     },
   });
 

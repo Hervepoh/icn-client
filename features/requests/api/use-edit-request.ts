@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Cookies from 'js-cookie';
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 type RequestType = any
 
@@ -13,7 +15,10 @@ export const useEditRequest = (id?: string) => {
     RequestType
   >({
     mutationFn: async (payload) => {
-      const response = await axios.put(`http://localhost:8000/api/v1/requests/${id}`, payload, {
+      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, payload, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
         withCredentials: true,
       });
       return response.data;

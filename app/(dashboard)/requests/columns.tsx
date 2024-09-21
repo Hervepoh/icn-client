@@ -4,7 +4,7 @@ import { ArrowUpDown, ClipboardCheck, TriangleAlert } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 // import { CategoryColumn } from "./category-column";
 
 interface ResponseType {
-  _id: string;
+  id: string;
   reference: string;
   name: string;
   amount: string;
@@ -130,9 +130,9 @@ export const columns: ColumnDef<ResponseType>[] = [
             variant={statusStyles[rowStatus] || "primary"}
             className="px-3.5 py-2.5">
             {status.icon && (
-              <status.icon className='mr-2 h-4 w-4 text-muted-foreground text-white' />
+              <status.icon className={cn("mr-2 h-4 w-4 text-muted-foreground", status.iconColor)} />
             )}
-            <span>{status.label}</span>
+            <span>{status.label.toLocaleUpperCase()}</span>
           </Badge>
 
         </div>
@@ -249,7 +249,7 @@ export const columns: ColumnDef<ResponseType>[] = [
     ),
     // cell: ({ row }) => {
     //   return (
-    //     <CategoryColumn id={row?.original?._id} category={row?.original?.mode} categoryId={row?.original?.categoryId} />
+    //     <CategoryColumn id={row?.original?.id} category={row?.original?.mode} categoryId={row?.original?.categoryId} />
     //   )
     // },
   },
@@ -257,9 +257,9 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     id: "actions",
     header: ({ column }) => ( "Actions "),
-    cell: ({ row }) => row.original.status === status[1] && <Actions id={row.original._id} />
-      || row.original.status === status[2] && <ActionsValidations id={row.original._id} />
-      || row.original.status === status[3] && <ActionsInvoicesAdd id={row.original._id} />
+    cell: ({ row }) => row.original.status === status[1] && <Actions id={row.original.id} />
+      || row.original.status === status[2] && <ActionsValidations id={row.original.id} />
+      || row.original.status === status[3] && <ActionsInvoicesAdd id={row.original.id} />
       || row.original.status === status[4] && (""),
     enableSorting: false,
   },

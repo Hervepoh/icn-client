@@ -132,3 +132,39 @@ export function formatDateRange(period: Period) {
 export function isSameYear(date1: Date, date2: Date): boolean {
   return date1.getFullYear() === date2.getFullYear();
 }
+
+
+interface Permission {
+  id: string;
+  name: string;
+}
+
+interface RolePermission {
+  permission: Permission;
+}
+
+interface Role {
+  id: string;
+  name: string;
+  RolePermission: RolePermission[];
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  roles: { userId: string; roleId: string }[];
+  role: Role;
+}
+
+
+// export function hasPermission(user: User, permissionName: string): boolean {
+//   return user.role?.RolePermission.some(rolePermission => 
+//       rolePermission.permission.name === permissionName
+//   );
+// }
+export function hasPermission(user: User, ...permissionNames: string[]): boolean {
+  return user.role?.RolePermission.some(rolePermission => 
+      permissionNames.includes(rolePermission.permission.name)
+  ) ?? false;
+}

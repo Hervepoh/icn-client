@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 type RequestType = any;
 
@@ -13,8 +14,7 @@ export const useDeleteRequestDetails = (requestId: string) => {
     RequestType
   >({
     mutationFn: async (id) => {
-      console.log("requestId",requestId)
-      const response = await axios.delete(`http://localhost:8000/api/v1/request-details`, {
+      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/request-details`, {
         data: {id:id},
         withCredentials: true,
       });

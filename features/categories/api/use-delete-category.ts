@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 
 type ResponseType = any
@@ -16,7 +17,7 @@ export const useDeleteCategory = (id?: string) => {
       const  config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: `http://localhost:8000/api/v1/categories/${id}`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/categories/${id}`,
         headers: {
           'Content-Type': 'application/json',
         },

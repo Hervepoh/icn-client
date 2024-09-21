@@ -1,25 +1,21 @@
 import React from "react"
 
 import { cn } from "@/lib/utils";
-import { useSelector } from "react-redux";
 import { style } from "@/config/layout.config";
 import { Filters } from "@/components/filters";
-import { HeaderLogo } from "@/components/header-logo";
 import { Navigation } from "@/components/navigation";
 import { WelcomeMsg } from "@/components/welcome-msg";
-import { UserNav } from "@/components/user-nav";
+import { HeaderLogo } from "@/components/header-logo";
 import ThemeSwitcher from "@/components/theme-switcher";
 import LocaleSwitcher from "@/components/locale-switcher";
-import UserProtected from "@/components/security/userProtected";
-
+import { UserNav } from "@/components/user-nav";
 
 type Props = {}
 
 export const Header = ({ }: Props) => {
-    const { user } = useSelector((state: any) => state.auth);  // redux state
 
     return (
-        <UserProtected>
+
         <header className={cn(
             "px-4 py-8 pb-36  lg:px-14",
             style.linearGradiant,
@@ -33,11 +29,11 @@ export const Header = ({ }: Props) => {
                     </div>
                     {/* center */}
                     <Navigation />
-                     {/* right */}
+                    {/* right */}
                     <div className="flex items-center justify-center">
                         <LocaleSwitcher />
                         <ThemeSwitcher />
-                        <UserNav user={user} />
+                        <UserNav />
                     </div>
                 </div>
                 <div className="flex flex-col lg:flex-row items-center lg:justify-between">
@@ -46,6 +42,6 @@ export const Header = ({ }: Props) => {
                 </div>
             </div>
         </header>
-        </UserProtected>
+
     );
 }

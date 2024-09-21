@@ -47,7 +47,7 @@ export const SearchForm = ({ key,label,placeholder }: Props) => {
         const value = values.value
         const from = values.from
         const to = values.to
-        console.log("ok search input");
+        //console.log("ok search input");
         // mutate({ value , from , to }, {
         //     onSuccess: () => {
         //         // onClose();

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 type RequestType = any;
 
@@ -13,11 +14,7 @@ export const useUpdateCategory = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      const response = await axios.put(
-        `http://localhost:8000/api/v1/requests/${id}`,
-        json, 
-        { withCredentials: true, }
-      );
+      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, json, { withCredentials: true, });
       return response.data;
 
     },

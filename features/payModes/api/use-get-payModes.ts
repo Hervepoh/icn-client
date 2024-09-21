@@ -1,5 +1,7 @@
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 export const useGetPayModes = () => {
 
@@ -10,8 +12,9 @@ export const useGetPayModes = () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://localhost:8000/api/v1/pay-modes',
+        url: `${NEXT_PUBLIC_SERVER_URI}/pay-modes`,
         headers: {
+          'Authorization': Cookies.get('access_token')
         },
         withCredentials: true, // Set this to true
         data: ''

@@ -23,9 +23,9 @@ export const useSelectBank = (): [() => JSX.Element, () => Promise<unknown>] => 
         bankMutation.mutate({ name })        
     }
     const bankOptions = (bankQuery.data ?? []).map(
-        (bank: { name: any; _id: any; }) => ({
+        (bank: { name: any; id: any; }) => ({
             label: bank.name,
-            value: bank._id
+            value: bank.id
         })
     );
 

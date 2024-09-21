@@ -1,5 +1,7 @@
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosRequestConfig  } from "axios";
+import Cookies from "js-cookie";
 
 export const useGetRequestDetails = (id?: string) => {
   const query = useQuery({
@@ -9,8 +11,9 @@ export const useGetRequestDetails = (id?: string) => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `http://localhost:8000/api/v1/request-details/${id}`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/request-details/${id}`,
         headers: {
+          'Authorization': Cookies.get('access_token')
         },
         withCredentials: true, // Set this to true
         data: ''

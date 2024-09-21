@@ -1,28 +1,21 @@
 "use client"
-import React, { useEffect } from 'react'
+import React from 'react'
 import { toast } from 'sonner';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { cn } from '@/lib/utils';
 
+import { cn } from '@/lib/utils';
 import { style } from '@/config/layout.config';
 import Metadata from '@/components/metadata';
 import ThemeSwitcher from '@/components/theme-switcher';
 import LocaleSwitcher from '@/components/locale-switcher';
-import UserAuth from '@/components/security/userAuth';
+import { useUserStore } from '@/features/users/hooks/use-user-store';
 
 type Props = {
     children: React.ReactNode;
 }
 
 export default function AuthLayout({ children }: Props) {
-    const { user } = useSelector((state: any) => state.auth);  // redux state
-    const router = useRouter();
-    if (user) {
-        router.push('/');
-    }
-    
 
     return (
         <>

@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 // import { useSearchParams } from "next/navigation";
 import { convertAmountFromMilliunits } from "@/lib/utils";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import Cookies from "js-cookie";
+import { NEXT_PUBLIC_SERVER_URI } from "@/secret";
 
 
 export const useGetRequests = (filter:string="") => {
@@ -20,8 +22,9 @@ export const useGetRequests = (filter:string="") => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: process.env.NEXT_PUBLIC_SERVER_URI+'/requests'+filter,
+        url: `${NEXT_PUBLIC_SERVER_URI}/requests`+filter,
         headers: {
+          'Authorization': Cookies.get('access_token')
         },
         withCredentials: true, // Set this to true
         data: ''

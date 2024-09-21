@@ -13,7 +13,7 @@ import { status, statuses, statusStyles } from "@/config/status.config";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 
 interface ResponseType {
-  _id: string;
+  id: string;
   reference: string;
   name: string;
   amount: string;

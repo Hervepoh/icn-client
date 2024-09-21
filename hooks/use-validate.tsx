@@ -80,15 +80,15 @@ export const useValidate = ({
                                     </div>
                                     <div>
                                         <p className="text-gray-500 font-medium">Date de paiement</p>
-                                        <p className="font-medium">{format(transactionQuery.data.payment_date, "dd/MM/yyyy")}</p>
+                                        <p className="font-medium">{format(transactionQuery.data.paymentDate, "dd/MM/yyyy")}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-500 font-medium">Mode de paiement</p>
-                                        <p className="font-medium">{transactionQuery.data.payment_mode.name}</p>
+                                        {/* <p className="font-medium">{transactionQuery.data.payment_mode.name}</p> */}
                                     </div>
                                     <div>
                                         <p className="text-gray-500 font-medium">Banque</p>
-                                        <p className="font-medium">{transactionQuery.data.bank.name}</p>
+                                        {/* <p className="font-medium">{transactionQuery.data.bank.name}</p> */}
                                     </div>
                                     <div className="mb-5">
                                         <p className="text-gray-500 font-medium">Proof of payment</p>

@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
 import { convertAmountFromMilliunits, formatDateRange } from "@/lib/utils";
 import { formatDate,format, subDays } from 'date-fns';
+import Cookies from 'js-cookie';
+import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 export const useGetSummary = () => {
 
@@ -35,13 +37,14 @@ export const useGetSummary = () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `http://localhost:8000/api/v1/summary?from=${from}&to=${to}`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/summary?from=${from}&to=${to}`,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': Cookies.get('access_token')
         },
         withCredentials: true, // Set this to true
       };
-      console.log(config);
+      //console.log(config);
       try {
         const response = await axios.request(config);
         return { ...response.data?.data, dateRangeLabel };

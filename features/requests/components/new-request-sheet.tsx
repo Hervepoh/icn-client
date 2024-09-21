@@ -46,9 +46,9 @@ export function NewRequestSheet() {
     const payModeMutation = useCreatePayMode();
     const onCreatePayMode = (name: string) => payModeMutation.mutate({ name });
     const payModeOptions = (payModeQuery.data ?? []).map(
-        (payMode: { name: any; _id: any; }) => ({
+        (payMode: { name: any; id: any; }) => ({
             label: payMode.name,
-            value: payMode._id
+            value: payMode.id
         })
     );
 
@@ -56,9 +56,9 @@ export function NewRequestSheet() {
     const bankMutation = useCreateBank();
     const onCreateBank = (name: string) => bankMutation.mutate({ name });
     const bankOptions = (bankQuery.data ?? []).map(
-        (bank: { name: any; _id: any; }) => ({
+        (bank: { name: any; id: any; }) => ({
             label: bank.name,
-            value: bank._id
+            value: bank.id
         })
     );
 
