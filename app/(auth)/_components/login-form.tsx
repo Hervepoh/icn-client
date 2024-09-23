@@ -56,7 +56,7 @@ export const LoginForm = (props: Props) => {
       setErrorMessage("");
       setSuccessMessage("");
       // or you can use api route
-      axios.post('/api/login', values).then((response) => {
+      axios.post('/api/auth/login', values).then((response) => {
 
         // Stocker dans les cookies
         Cookies.set('access_token', response.data.accessToken, {
