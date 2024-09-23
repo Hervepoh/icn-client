@@ -112,8 +112,6 @@ export function DataTable<TData, TValue>({
                             onClick={async () => {
                                 const ok = await confirm();
                                 if (ok) {
-                                    // Logique for delete
-                                    // console.log("Élément supprimé");
                                     onSubmit(table.getFilteredSelectedRowModel().rows);
                                     table.resetRowSelection();
                                 }

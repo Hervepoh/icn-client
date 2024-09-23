@@ -83,7 +83,7 @@ export function EditRequestSheet() {
         const defaultValues = transactionQuery.data
         ? {
             name: transactionQuery.data.name,
-            amount: transactionQuery.data.amount.toString(),
+            amount: transactionQuery.data.amount,
             bank: transactionQuery.data.bankId,
             payment_date: transactionQuery.data.paymentDate
                 ? new Date(transactionQuery.data.paymentDate)

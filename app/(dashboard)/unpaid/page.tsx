@@ -1,5 +1,4 @@
 "use client";
-import { useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { useGetRequests } from '@/features/requests/api/use-get-requests';

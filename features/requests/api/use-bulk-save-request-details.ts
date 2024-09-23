@@ -15,7 +15,7 @@ export const useBulkSaveRequestDetails = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/request-details-bulk/${id}`, json, {
+      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
         headers: {
           'Authorization': Cookies.get('access_token')
         },
@@ -25,7 +25,7 @@ export const useBulkSaveRequestDetails = (id?: string) => {
     },
     onSuccess: () => {
       toast.success("Save successfully")
-      queryClient.invalidateQueries({ queryKey: ["request-details", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["requests-details", { id }] });
       //queryClient.invalidateQueries({ queryKey: ["summary"] });
 
     },

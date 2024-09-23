@@ -61,7 +61,7 @@ export function DataTableReadOnly<TData, TValue>({
     function jsonToCSV(jsonData: any[]): string {
         const delimiter = '|'
         const headers = [
-            'id', 'index', 'reference', 'userId', 'name', 'amount',
+            'reference', 'userId', 'name', 'amount',
             'bank', 'payment_date', 'payment_mode', 'status', 'createdBy',
             'modifiedBy', 'createdAt', 'updatedAt'
         ];
@@ -71,8 +71,6 @@ export function DataTableReadOnly<TData, TValue>({
 
         for (const item of jsonData) {
             const row = [
-                item.id,
-                item.index,
                 item.original.id,
                 item.original.reference,
                 item.original.userId,

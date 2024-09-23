@@ -15,6 +15,7 @@ import { status, statuses, statusStyles } from "@/config/status.config";
 import { ActionsValidations } from "./actions-validation";
 import { ActionsInvoicesAdd } from "./actions-invoiceAdd";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { ActionsAssignTo } from "./actions-assignTo";
 // import { AccountColumn } from "./account-column";
 // import { CategoryColumn } from "./category-column";
 
@@ -256,11 +257,15 @@ export const columns: ColumnDef<ResponseType>[] = [
 
   {
     id: "actions",
-    header: ({ column }) => ( "Actions "),
-    cell: ({ row }) => row.original.status === status[1] && <Actions id={row.original.id} />
-      || row.original.status === status[2] && <ActionsValidations id={row.original.id} />
-      || row.original.status === status[3] && <ActionsInvoicesAdd id={row.original.id} />
-      || row.original.status === status[4] && (""),
+    header: ({ column }) => ("Actions "),
+    cell: ({ row }) => {
+      console.log("row.original.status === status[3] : ", row.original.status === status[3]);
+      return row.original.status === status[1] && <Actions id={row.original.id} />
+        || row.original.status === status[2] && <ActionsValidations id={row.original.id} />
+        || row.original.status === status[3] && <ActionsAssignTo id={row.original.id} />
+        || row.original.status === status[4] && ""
+        || row.original.status === status[5] && <ActionsInvoicesAdd id={row.original.id} />
+    },
     enableSorting: false,
   },
 ];

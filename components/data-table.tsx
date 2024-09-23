@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     filterKey: string,
+    deletable?: boolean
     onDelete: (rows: Row<TData>[]) => void,
     disabled?: boolean
 }
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
     columns,
     data,
     filterKey,
+    deletable=false,
     onDelete,
     disabled
 }: DataTableProps<TData, TValue>) {
@@ -90,7 +92,7 @@ export function DataTable<TData, TValue>({
                     <DataTableToolbar table={table} filterKey={filterKey} />
                 </div>
                 {
-                    table.getFilteredSelectedRowModel().rows.length > 0 && (
+                    deletable && table.getFilteredSelectedRowModel().rows.length > 0 && (
                         <Button
                             onClick={async () => {
                                 const ok = await confirm();
@@ -100,7 +102,6 @@ export function DataTable<TData, TValue>({
                                     onDelete(table.getFilteredSelectedRowModel().rows);
                                     table.resetRowSelection();
                                 }
-
                             }}
                             disabled={disabled}
                             size="sm"

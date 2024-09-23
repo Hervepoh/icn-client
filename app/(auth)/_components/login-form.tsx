@@ -70,7 +70,8 @@ export const LoginForm = (props: Props) => {
 
         setSuccessMessage("Login Successfully!");
         toast.success("Login Successfully!");
-        router.push("/");
+        router.push("/")
+        window.location.reload();
 
       }).catch((error) => {
         const message = error.response?.data?.message || 'Something went wrong';

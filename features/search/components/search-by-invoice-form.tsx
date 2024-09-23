@@ -37,14 +37,14 @@ type Props = {
     setViewRecap: (value: boolean) => void;
 }
 
-export const SearchByInvoiceForm = ({ 
-    label, 
-    placeholder, 
+export const SearchByInvoiceForm = ({
+    label,
+    placeholder,
     setIsFirstView,
-    setInvoices ,
-    setError , 
+    setInvoices,
+    setError,
     setIsPending,
-    setViewRecap 
+    setViewRecap
 }: Props) => {
     const [isLoading, setIsLoading] = useState(false);
     const form = useForm<FormValues>({
@@ -53,22 +53,25 @@ export const SearchByInvoiceForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        setIsFirstView(false);
-        
+   
+
         startTransition(async () => {
             setIsLoading(true);
             setIsPending(true);
+
             const config: AxiosRequestConfig = {
                 method: 'get',
                 maxBodyLength: Infinity,
                 url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${values.value}`,
-                headers: {'Authorization': Cookies.get('access_token')},
+                headers: { 'Authorization': Cookies.get('access_token') },
                 withCredentials: true, // Set this to true
                 data: ''
             };
             try {
                 const response = await axios.request(config);
                 setInvoices(response.data.bills ?? []);
+                setIsLoading(false);
+                setIsPending(false);
             } catch (error) {
                 setError("something went wrong");
                 setIsLoading(false);
@@ -79,14 +82,13 @@ export const SearchByInvoiceForm = ({
                     throw new Error('Une erreur inconnue s\'est produite');
                 }
             }
-            setIsLoading(false);
-            setIsPending(false);
+
         });
-        
+
+        setIsFirstView(false);
         setViewRecap(false);
     }
 
-    const disabled = isLoading;
     return (
         <Form {...form}>
             <form
@@ -102,7 +104,7 @@ export const SearchByInvoiceForm = ({
                             <FormLabel>{label}</FormLabel>
                             <FormControl>
                                 <Input
-                                    disabled={disabled}
+                                    disabled={isLoading}
                                     placeholder={placeholder}
                                     {...field}
                                 />
@@ -115,9 +117,9 @@ export const SearchByInvoiceForm = ({
                 <Button
                     type="submit"
                     className="w-full"
-                    disabled={disabled}
+                    disabled={isLoading}
                 >
-                    {disabled ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
+                    {isLoading ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
                 </Button>
 
             </form>

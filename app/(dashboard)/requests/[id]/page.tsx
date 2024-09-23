@@ -58,6 +58,7 @@ import { useEditRequest } from "@/features/requests/api/use-edit-request"
 import { InfoCard } from "@/components/info-card";
 import { useDeleteRequestDetails } from "@/features/requests/api/use-delete-request-details";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface Invoice {
     id: string;
@@ -71,17 +72,13 @@ export default function TransactionsDetails() {
     const router = useRouter();
 
     const {
-        isLoading,
-        isError,
+        isLoading: request_isLoading,
         data,
-        error
     } = useGetRequest(params.id)
 
     const {
         isLoading: details_isLoading,
-        isError: details_isError,
-        data: details_data,
-        error: details_error
+        data: details_data
     } = useGetRequestDetails(params.id)
 
     const AddDeltailsTransactionsQuery = useBulkRequestDetails(params.id);
@@ -90,8 +87,9 @@ export default function TransactionsDetails() {
 
     const disable = AddDeltailsTransactionsQuery.isPending
         || SaveDeltailsTransactionsQuery.isPending
-        || DeleteDetailTransactionsQuery.isPending 
-        || details_isLoading
+        || DeleteDetailTransactionsQuery.isPending
+
+    const isLoading = request_isLoading || details_isLoading;
 
     const [disableSubmit, setDisableSubmit] = useState(true);
 
@@ -223,43 +221,31 @@ export default function TransactionsDetails() {
         }
     };
 
-
-
+    if (isLoading) {
+        <LoadingComponent />
+    }
+    
+    console.log("finalData",finalData);
+    
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
             <div className="grid grid-cols-1 lg:grid-cols-4 md:gap-8 pb-2 mb-8">
                 <Card className='border-none drop-shadow-sm '>
                     <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
-                        {
-                            details_isLoading ?
-                                <>
-                                    <div>
-                                        <Skeleton className="w-32 h-6 mb-2" />
-                                        <Skeleton className="w-40 h-5" />
-                                    </div>
-                                    <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
-                                        <Skeleton className="w-10 h-10" />
-                                    </div>
-                                </>
-                                :
-                                <>
-                                    <div>
-                                        <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
-                                        <CardDescription>Unpaid bill</CardDescription>
-                                    </div>
-                                    <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
-                                        {view === "upload" ?
-                                            <BiPlusCircle size={48} className="sm:w-15" onClick={() => setView("search")} />
-                                            : <BiSearch size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
-                                    </div>
-                                </>
-                        }
-
+                        <div>
+                            <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
+                            <CardDescription>Unpaid bill</CardDescription>
+                        </div>
+                        <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+                            {view === "upload" ?
+                                <BiPlusCircle size={48} className="sm:w-15" onClick={() => setView("search")} />
+                                : <BiSearch size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             {
-                                !details_isLoading &&
+                                !isLoading &&
                                 view === "search" &&
                                 <div ref={selectRef} className={cn("space-y-2", "mb-5")}>
                                     <Label>Criteria</Label>
@@ -363,7 +349,7 @@ export default function TransactionsDetails() {
                                     (<CardDescription className="lg:line-clamp-1 lg:flex gap-3">
                                         <div>Customer : <span className="font-bold text-md">{data?.name ?? ""}</span></div>
                                         <div>Amount  :  xfa  <span className="font-bold text-md">{data?.amount}</span></div>
-                                        <div>Date  :   <span className="font-bold text-md">{data?.amount}</span></div>
+                                        <div>Date  :   <span className="font-bold text-md">{format(new Date(data?.paymentDate), 'dd/MM/yyyy')}</span></div>
                                         <div>Bank :  <span className="font-bold">{data?.bank.name}</span></div>
                                     </CardDescription>)
                             }
@@ -406,7 +392,7 @@ export default function TransactionsDetails() {
 
                                                 <Button
                                                     disabled={disableSubmit}
-                                                    variant={ disableSubmit ? "default": "success" }
+                                                    variant={disableSubmit ? "default" : "success"}
                                                     onClick={() => ""}
                                                     size="sm"
                                                     className='w-full lg:w-auto'>
@@ -529,7 +515,7 @@ export default function TransactionsDetails() {
                                                                 name: r.original[3].toString(),
                                                                 amountUnpaid: r.original[5]
                                                             }));
-
+                                                            console.log("AddDeltailsTransactionsQuery", data)
                                                             AddDeltailsTransactionsQuery.mutate(data);
                                                         }}
                                                         disabled={disable}
@@ -545,4 +531,42 @@ export default function TransactionsDetails() {
     )
 }
 
+
+const LoadingComponent = () => {
+    return (
+        <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
+            <div className="grid grid-cols-1 lg:grid-cols-4 md:gap-8 pb-2 mb-8">
+                <Card className='border-none drop-shadow-sm '>
+                    <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
+
+                        <div>
+                            <Skeleton className="w-32 h-6 mb-2" />
+                            <Skeleton className="w-40 h-5" />
+                        </div>
+                        <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+                            <Skeleton className="w-10 h-10" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+
+                    </CardContent>
+                </Card>
+                <Card className='border-none drop-shadow-sm col-span-3'>
+                    <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
+                        <div className='space-y-2'>
+                            <Skeleton className="w-[500px] h-[20px] rounded-full" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="w-[500px] h-[20px] rounded-full" />
+
+                        <div className="flex h-full items-start justify-center p-6">
+                            <Skeleton className="w-full h-[500px]" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    )
+}
 

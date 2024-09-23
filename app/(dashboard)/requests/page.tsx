@@ -4,19 +4,16 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Plus, Upload } from 'lucide-react';
 
+import { useUserStore } from '@/features/users/hooks/use-user-store';
+import { useSelectBank } from '@/features/banks/hooks/use-select-bank';
 import { useNewRequest } from '@/features/requests/hooks/use-new-request';
 import { useGetRequests } from '@/features/requests/api/use-get-requests';
 import { useBulkCreateRequests } from '@/features/requests/api/use-bulk-create-requests';;
 // import { useBulkDeleteTransactions } from '@/features/transactions/api/use-bulk-delete-transactions';
 
-
-import { useSelectBank } from '@/features/banks/hooks/use-select-bank';
-
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -25,11 +22,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from '@/components/data-table';
 
 import { columns } from './columns';
-import { UploadButton } from './upload-button';
 import { ImportCard } from './import-card';
-import { useSelector } from 'react-redux';
+import { UploadButton } from './upload-button';
 import { hasPermission } from '@/lib/utils';
-import { useUserStore } from '@/features/users/hooks/use-user-store';
+
 
 enum VARIANTS {
     LIST = "LIST",
@@ -48,11 +44,11 @@ export default function TransactionsPage(props: Props) {
     const { user } = useUserStore();
 
     const newRequest = useNewRequest()
+    const getTransactionsQuery = useGetRequests();
     const createTransactionsQuery = useBulkCreateRequests();
     // const deleteTransactionsQuery = useBulkDeleteTransactions();
-    const getTransactionsQuery = useGetRequests();
-    const transactions = getTransactionsQuery.data || [];
 
+    let transactions = getTransactionsQuery.data || [];
     const isDisabled = getTransactionsQuery.isLoading // || deleteTransactionsQuery.isPending
 
     // Import features
@@ -85,8 +81,6 @@ export default function TransactionsPage(props: Props) {
             ...value,
             bank: bankId as string,
         }))
-
-        console.log("data", data);
 
         createTransactionsQuery.mutate(data, {
             onSuccess: () => {
@@ -129,16 +123,27 @@ export default function TransactionsPage(props: Props) {
         )
     }
 
+    if (!hasPermission(user, "TRANSACTION-VALIDATE", "TRANSACTION-ASSIGN")) {
+        transactions = transactions.filter((transaction: any) => transaction.userId === user.id)
+    }
+    if (hasPermission(user, "TRANSACTION-VALIDATE")) {
+        transactions = transactions.filter((transaction: any) => transaction.statusId == 3)
+    }
+    if (hasPermission(user, "TRANSACTION-ASSIGN")) {
+        transactions = transactions.filter((transaction: any) => ( (transaction.statusId == 4) && (transaction.userId === transaction.createdById)))
+    }
+
+
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-            <Card className='border-none drop-shadow-sm'>
+            <Card className='border-none drop-shadow-sm'> 
                 <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
                     <CardTitle className='text-xl line-clamp-1'>Transactions History</CardTitle>
 
                     <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
                         {
-                  
-                            (hasPermission(user, "TRANSACTION-CREATE","TRANSACTION-WRITE")) &&
+
+                            (hasPermission(user, "TRANSACTION-CREATE", "TRANSACTION-WRITE")) &&
                             <Button
                                 onClick={newRequest.onOpen}
                                 size="sm"
@@ -162,6 +167,7 @@ export default function TransactionsPage(props: Props) {
                         columns={columns}
                         data={transactions}
                         filterKey='reference'
+                        deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
                         onDelete={(row) => {
                             ""
                             // const ids = row.map((r) => r.original.id);

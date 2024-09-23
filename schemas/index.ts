@@ -32,5 +32,5 @@ export const RegisterSchema = z.object({
 
 
 export const RejectSchema = z.object({
-  reason_for_refusal: z.string().min(1, { message: "Reason is required" }),
+  reasonForRefusal: z.string().min(1, { message: "Reason is required" }),
 });

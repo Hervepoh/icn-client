@@ -14,7 +14,7 @@ export const navbarRoutes: {href:string,label:string}[] = [
         label: language.demand["fr"]
     },
     {
-        href: "/requestsUnpaid",
+        href: "/unpaid",
         label: language.aci_unpaid["fr"]
     },
     {

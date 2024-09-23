@@ -2,6 +2,7 @@ import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
+import Cookies from 'js-cookie';
 
 type RequestType = any;
 
@@ -14,18 +15,21 @@ export const useDeleteRequestDetails = (requestId: string) => {
     RequestType
   >({
     mutationFn: async (id) => {
-      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/request-details`, {
-        data: {id:id},
+      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests-details/${id}`, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        data: {},
         withCredentials: true,
       });
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Invoice deleted.")
-      queryClient.invalidateQueries({ queryKey: ["request-details", { requestId }] });
+      toast.success("Invoice removed successfully.")
+      queryClient.invalidateQueries({ queryKey: ["requests-details", { requestId }] });
     },
     onError: () => {
-      toast.error("Failed to delete Invoice.")
+      toast.error("Failed to remove Invoice in your card")
     },
   });
 

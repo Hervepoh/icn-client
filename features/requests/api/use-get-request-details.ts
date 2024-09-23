@@ -6,12 +6,12 @@ import Cookies from "js-cookie";
 export const useGetRequestDetails = (id?: string) => {
   const query = useQuery({
     enabled: !!id,   // Fetch only if we have the id
-    queryKey: ["request-details", { id }],
+    queryKey: ["requests-details", { id }],
     queryFn: async () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/request-details/${id}`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/requests-details/${id}`,
         headers: {
           'Authorization': Cookies.get('access_token')
         },

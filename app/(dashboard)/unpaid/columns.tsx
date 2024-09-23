@@ -136,19 +136,19 @@ export const columns: ColumnDef<ResponseType>[] = [
   },
 
   {
-    accessorKey: "validator",
+    accessorKey: "validatedBy",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='validator' />
+      <DataTableColumnHeader column={column} title='validatedBy' />
     ),
   },
 
   {
-    accessorKey: "validetedAt",
+    accessorKey: "validatedAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='validetedAt' />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("validetedAt") as Date;
+      const date = row.getValue("validatedAt") as Date;
       if (date) {
         return <span>{format(date, "dd/MM/yyyy HH:mm:ss")}</span>;
       }else {
@@ -177,6 +177,11 @@ export const columns: ColumnDef<ResponseType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Modified By' />
     ),
+    cell: ({ row }) => {
+      const date = row.getValue("updatedAt") as Date;
+
+      return <span>{format(date, "dd/MM/yyyy HH:mm:ss")}</span>;
+    },
   },
 
 

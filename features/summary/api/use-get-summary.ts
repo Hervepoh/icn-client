@@ -29,15 +29,17 @@ export const useGetSummary = () => {
     
   }, [from,to]);
 
-
-
+  let filter = "";
+  if (from && to) {
+    filter = `?from=${from}&to=${to}`
+  }
   const query = useQuery({
     queryKey: ["summary", { from, to }],
     queryFn: async () => {
       const config: AxiosRequestConfig = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/summary?from=${from}&to=${to}`,
+        url: `${NEXT_PUBLIC_SERVER_URI}/summary${filter}`,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': Cookies.get('access_token')

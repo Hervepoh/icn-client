@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-type RejectState = {
+type OpenValidationState = {
     id?: string;
     isOpen: boolean;
     onOpen: (id: string) => void;
     onClose: () => void;
 }
 
-export const useRejectRequest = create<RejectState>((set) => ({
+export const useOpenRequestValidation = create<OpenValidationState>((set) => ({
     id: undefined,
     isOpen: false,
     onOpen: (id: string) => set({ isOpen: true, id }),

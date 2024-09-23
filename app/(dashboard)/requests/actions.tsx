@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
 import { status } from '@/config/status.config';
+import { useUserStore } from '@/features/users/hooks/use-user-store';
+import { hasPermission } from '@/lib/utils';
 
 
 type Props = {
@@ -22,6 +24,7 @@ type Props = {
 }
 
 export const Actions = ({ id }: Props) => {
+    const { user } = useUserStore();
     const { onOpen, onClose } = useOpenRequest();
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
@@ -55,43 +58,47 @@ export const Actions = ({ id }: Props) => {
 
     }
 
-    return (
-        <>
-            <ConfirmationDialog />
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <Button variant="ghost" className='size-8 p-0'>
-                        <MoreHorizontal className='size-4' />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                    <DropdownMenuItem
-                        disabled={isPending}
-                        onClick={handleSubmit}
-                    >
-                        <Send className="mr-2 size-4" />
-                        <span>Submit</span>
-                    </DropdownMenuItem>
+    if (user && hasPermission(user, "TRANSACTION-PUBLISH")) {
+        return (
+            <>
+                <ConfirmationDialog />
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Button variant="ghost" className='size-8 p-0'>
+                            <MoreHorizontal className='size-4' />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align='end'>
+                        <DropdownMenuItem
+                            disabled={isPending}
+                            onClick={handleSubmit}
+                        >
+                            <Send className="mr-2 size-4" />
+                            <span>Submit</span>
+                        </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                        disabled={isPending}
-                        onClick={() => onOpen(id)}
-                    >
-                        <Edit className="mr-2 size-4" />
-                        <span>Edit</span>
-                    </DropdownMenuItem>
+                        <DropdownMenuItem
+                            disabled={isPending}
+                            onClick={() => onOpen(id)}
+                        >
+                            <Edit className="mr-2 size-4" />
+                            <span>Edit</span>
+                        </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                        disabled={isPending}
-                        onClick={handleDelete}
-                    >
-                        <Trash className="mr-2 size-4" />
-                        <span>Delete</span>
-                    </DropdownMenuItem>
+                        <DropdownMenuItem
+                            disabled={isPending}
+                            onClick={handleDelete}
+                        >
+                            <Trash className="mr-2 size-4" />
+                            <span>Delete</span>
+                        </DropdownMenuItem>
 
-                </DropdownMenuContent>
-            </DropdownMenu>
+                    </DropdownMenuContent>
+                </DropdownMenu>
 
-        </>
-    )
+            </>
+        )
+    }
+
+    return
 }

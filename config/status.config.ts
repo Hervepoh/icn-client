@@ -36,7 +36,7 @@ export const statuses = [
         value: 'validated',
         label: 'Validated',
         icon: CheckCircledIcon,
-        iconColor: 'text-white',
+        iconColor: 'text-black',
     },
     {
         value: 'rejected',
@@ -60,7 +60,7 @@ export const statuses = [
 ]
 
 export const statusStyles: { [key: string]: "default" | "success" | "destructive" | "outline" | "secondary" | "primary" | "warning" | null | undefined } = {
-    "draft": "destructive",
+    "draft": "default",
     "initiated": "primary",
     "validated": "success",
     "rejected": "destructive",

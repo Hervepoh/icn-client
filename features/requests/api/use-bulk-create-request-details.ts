@@ -15,7 +15,7 @@ export const useBulkRequestDetails = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/request-details-bulk/${id}`, json, {
+      const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
         headers: {
           'Authorization': Cookies.get('access_token')
         },
@@ -25,11 +25,12 @@ export const useBulkRequestDetails = (id?: string) => {
     },
     onSuccess: () => {
       toast.success("Add successfully")
-      queryClient.invalidateQueries({ queryKey: ["request-details", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["requests-details", { id }] });
       //queryClient.invalidateQueries({ queryKey: ["summary"] });
 
     },
-    onError: () => {
+    onError: (error) => {
+      toast.warning(error.message)
       toast.error("Failed to Add.")
     },
   });
