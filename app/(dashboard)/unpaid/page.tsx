@@ -1,7 +1,7 @@
 "use client";
 import { Loader2 } from 'lucide-react';
 
-import { useGetRequests } from '@/features/requests/api.old/use-get-requests';
+import { useGetRequests } from '@/features/requests/api/use-get-requests';
 
 import {
     Card,

@@ -7,8 +7,8 @@ import { Loader2, Plus, Upload } from 'lucide-react';
 import { useUserStore } from '@/features/users/hooks/use-user-store';
 import { useSelectBank } from '@/features/banks/hooks/use-select-bank';
 import { useNewRequest } from '@/features/requests/hooks/use-new-request';
-import { useGetRequests } from '@/features/requests/api.old/use-get-requests';
-import { useBulkCreateRequests } from '@/features/requests/api.old/use-bulk-create-requests';;
+import { useGetRequests } from '@/features/requests/api/use-get-requests';
+import { useBulkCreateRequests } from '@/features/requests/api/use-bulk-create-requests';;
 // import { useBulkDeleteTransactions } from '@/features/transactions/api/use-bulk-delete-transactions';
 
 import {

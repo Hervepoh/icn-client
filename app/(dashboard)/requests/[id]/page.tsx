@@ -42,7 +42,7 @@ import { DataTable } from './_components/data-table';
 
 import { cn } from "@/lib/utils";
 
-import { useGetRequest } from "@/features/requests/api.old/use-get-request";
+import { useGetRequest } from "@/features/requests/api/use-get-request";
 import { SearchByInvoiceForm } from "@/features/search/components/search-by-invoice-form";
 import { SearchByContractForm } from "@/features/search/components/search-by-contract-form";
 import { SearchByRegroupForm } from "@/features/search/components/search-by-regroup-form";
@@ -50,13 +50,13 @@ import { SearchByCodeCliForm } from "@/features/search/components/search-by-code
 import { columns } from "./_components/columns";
 import { SearchByFileForm } from "@/features/search/components/search-by-file-form";
 import { Input } from "@/components/ui/input";
-import { useGetRequestDetails } from "@/features/requests/api.old/use-get-request-details";
+import { useGetRequestDetails } from "@/features/requests/api/use-get-request-details";
 import { Button } from "@/components/ui/button";
-import { useBulkRequestDetails } from "@/features/requests/api.old/use-bulk-create-request-details";
-import { useBulkSaveRequestDetails } from "@/features/requests/api.old/use-bulk-save-request-details";
-import { useEditRequest } from "@/features/requests/api.old/use-edit-request"
+import { useBulkRequestDetails } from "@/features/requests/api/use-bulk-create-request-details";
+import { useBulkSaveRequestDetails } from "@/features/requests/api/use-bulk-save-request-details";
+import { useEditRequest } from "@/features/requests/api/use-edit-request"
 import { InfoCard } from "@/components/info-card";
-import { useDeleteRequestDetails } from "@/features/requests/api.old/use-delete-request-details";
+import { useDeleteRequestDetails } from "@/features/requests/api/use-delete-request-details";
 import { toast } from "sonner";
 import { format } from "date-fns";
 

@@ -19,9 +19,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { useOpenRequest } from '@/features/requests/hooks/use-open-request';
 import { PiMarkerCircleLight, PiSquareHalfBottomThin } from 'react-icons/pi';
-import { useDeleteRequest } from '@/features/requests/api.old/use-delete-request';
+import { useDeleteRequest } from '@/features/requests/api/use-delete-request';
 import { useRouter } from 'next/navigation';
-import { useEditRequest } from '@/features/requests/api.old/use-edit-request';
+import { useEditRequest } from '@/features/requests/api/use-edit-request';
 import { status } from '@/config/status.config';
 import { useUserStore } from '@/features/users/hooks/use-user-store';
 import { hasPermission } from '@/lib/utils';
