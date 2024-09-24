@@ -43,7 +43,7 @@ export default function RootLayout({
 }
 
 
-const socketId = socketIO(process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "", { transports: ["websocket"] });
+// const socketId = socketIO(process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "", { transports: ["websocket"] });
 
 type Props = {
   children: React.ReactNode
@@ -59,9 +59,9 @@ const Custom = ({ children }: Props) => {
     }
     setUpdate(prev => !prev); 
   }, [user, setUser, authUser]);
-  useEffect(() => {
-    socketId.on("connection", () => { });
-  }, []);
+  // useEffect(() => {
+  //   socketId.on("connection", () => { });
+  // }, []);
 
   return <>{
     isLoading ?
