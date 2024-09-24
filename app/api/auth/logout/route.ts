@@ -11,10 +11,9 @@ export async function POST(request: NextRequest) {
         );
     }
     try {
-        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/auth/me`, {
-            method: 'GET',
+        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/auth/logout`, {
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': data.accessToken
             },
             credentials: 'include' 

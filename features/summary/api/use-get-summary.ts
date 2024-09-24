@@ -36,19 +36,19 @@ export const useGetSummary = () => {
   const query = useQuery({
     queryKey: ["summary", { from, to }],
     queryFn: async () => {
-      const config: AxiosRequestConfig = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/summary${filter}`,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true, // Set this to true
-      };
-      //console.log(config);
+      // const config: AxiosRequestConfig = {
+      //   method: 'get',
+      //   maxBodyLength: Infinity,
+      //   url: `${NEXT_PUBLIC_SERVER_URI}/summary${filter}`,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': Cookies.get('access_token')
+      //   },
+      //   withCredentials: true, // Set this to true
+      // };
       try {
-        const response = await axios.request(config);
+        //const response = await axios.request(config);
+        const response = await axios.post('/api/summary' ,{ accessToken : Cookies.get('access_token') , filter: filter});
         return { ...response.data?.data, dateRangeLabel };
       } catch (error) {
         if (axios.isAxiosError(error)) {

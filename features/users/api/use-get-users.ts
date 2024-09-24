@@ -9,19 +9,20 @@ export const useGetUsers = () => {
   const query = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const config: AxiosRequestConfig = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/users/commercial`,
-        headers: {
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true, // Set this to true
-        data: ''
-      };
+      // const config: AxiosRequestConfig = {
+      //   method: 'get',
+      //   maxBodyLength: Infinity,
+      //   url: `${NEXT_PUBLIC_SERVER_URI}/users/commercial`,
+      //   headers: {
+      //     'Authorization': Cookies.get('access_token')
+      //   },
+      //   withCredentials: true, // Set this to true
+      //   data: ''
+      // };
 
       try {
-        const response = await axios.request(config);
+        // const response = await axios.request(config);
+        const response = await axios.post('/api/users' ,{ accessToken : Cookies.get('access_token')});
         return response.data;
       } catch (error: any) {
         if (error.response && error.response.status === 401) {

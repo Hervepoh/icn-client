@@ -9,29 +9,15 @@ import { toast } from "sonner";
 export const useAuthLogout = () => {
   const query = useMutation({
     mutationFn: async () => {
-      const config: AxiosRequestConfig = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/auth/logout`,
-        headers: {
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true, // Set this to true
-        data: ''
-      };
-
       try {
-        const response = await axios.request(config);
+        const response = await axios.post('/api/auth/logout' ,{ accessToken : Cookies.get('access_token')});
         return response.data;
       } catch (error: any) {
         if (error.response && error.response.status === 401) {
           return null
         }
-
         toast.error(error?.response?.data.message || "Something went wrong");
-
       }
-
     },
   });
 

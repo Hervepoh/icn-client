@@ -14,18 +14,19 @@ export const useDeleteBank = (id?: string) => {
     Error
   >({
     mutationFn: async () => {
-      const  config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: `${NEXT_PUBLIC_SERVER_URI}/banks/${id}`,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true, // Set this to true
-        data: ""
-      };
-      const response = await axios.request(config);
+      // const  config = {
+      //   method: 'post',
+      //   maxBodyLength: Infinity,
+      //   url: `${NEXT_PUBLIC_SERVER_URI}/banks/${id}`,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': Cookies.get('access_token')
+      //   },
+      //   withCredentials: true, // Set this to true
+      //   data: ""
+      // };
+      // const response = await axios.request(config);
+      const response = await axios.post('/api/banks', { enpoint: '/delete', id: id, accessToken: Cookies.get('access_token') });
       return response.data?.data;
     },
     onSuccess: () => {

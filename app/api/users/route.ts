@@ -11,10 +11,10 @@ export async function POST(request: NextRequest) {
         );
     }
     try {
-        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/auth/me`, {
+        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/users/commercial`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 'Authorization': data.accessToken
             },
             credentials: 'include' 

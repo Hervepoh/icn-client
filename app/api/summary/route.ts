@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         );
     }
     try {
-        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/auth/me`, {
+        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/summary${data.filter}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
