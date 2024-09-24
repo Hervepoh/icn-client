@@ -15,13 +15,14 @@ export const useBulkRequestDetails = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
-        headers: {
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true,
-      });
-      return response.data;
+      // const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
+      //   headers: {
+      //     'Authorization': Cookies.get('access_token')
+      //   },
+      //   withCredentials: true,
+      // });
+      const response = await axios.post('/api/requests', { enpoint: '/create-request', id: id , data: json , accessToken: Cookies.get('access_token') });
+        return response.data?.data;
     },
     onSuccess: () => {
       toast.success("Add successfully")

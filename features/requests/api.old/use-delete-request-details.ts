@@ -15,15 +15,14 @@ export const useDeleteRequestDetails = (requestId: string) => {
     RequestType
   >({
     mutationFn: async (id) => {
-      // const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests-details/${id}`, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   data: {},
-      //   withCredentials: true,
-      // });
-      const response = await axios.post('/api/requests', { enpoint: '/delete-request-detail', requestId: requestId, accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests-details/${id}`, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        data: {},
+        withCredentials: true,
+      });
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Invoice removed successfully.")

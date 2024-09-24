@@ -15,14 +15,13 @@ export const useBulkCreateRequests = () => {
       RequestType
     >({
       mutationFn: async (json) => {
-        // const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-bulk`, json, {
-        //   headers: {
-        //     'Authorization': Cookies.get('access_token')
-        //   },
-        //   withCredentials: true,
-        // });
-        const response = await axios.post('/api/requests', { enpoint: '/create-bulk', data: json ,accessToken: Cookies.get('access_token') });
-        return response.data?.data;
+        const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-bulk`, json, {
+          headers: {
+            'Authorization': Cookies.get('access_token')
+          },
+          withCredentials: true,
+        });
+        return response.data;
       },
       onSuccess: () => {
         toast.success("Transactions created successfully")

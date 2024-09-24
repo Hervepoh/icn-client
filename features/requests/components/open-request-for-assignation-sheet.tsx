@@ -11,8 +11,8 @@ import {
 
 import { useConfirm } from "@/hooks/use-confirm";
 import { useGetUsers } from "@/features/users/api/use-get-users";
-import { useGetRequest } from "@/features/requests/api/use-get-request";
-import { useEditRequest } from "@/features/requests/api/use-edit-request";
+import { useGetRequest } from "@/features/requests/api.old/use-get-request";
+import { useEditRequest } from "@/features/requests/api.old/use-edit-request";
 import { useOpenRequestAssignation } from "@/features/requests/hooks/use-open-request-for-assignation";
 import { RequestFormForAssignation } from "@/features/requests/components/request-form-for-assignation";
 import { status } from "@/config/status.config";

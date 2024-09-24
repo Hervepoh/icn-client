@@ -59,16 +59,18 @@ export const SearchByInvoiceForm = ({
             setIsLoading(true);
             setIsPending(true);
 
-            const config: AxiosRequestConfig = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${values.value}`,
-                headers: { 'Authorization': Cookies.get('access_token') },
-                withCredentials: true, // Set this to true
-                data: ''
-            };
+            // const config: AxiosRequestConfig = {
+            //     method: 'get',
+            //     maxBodyLength: Infinity,
+            //     url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${values.value}`,
+            //     headers: { 'Authorization': Cookies.get('access_token') },
+            //     withCredentials: true, // Set this to true
+            //     data: ''
+            // };
             try {
-                const response = await axios.request(config);
+                // const response = await axios.request(config);
+                const response = await axios.post('/api/search' ,{ enpoint: '/search-by-invoice', values: values , accessToken : Cookies.get('access_token')});
+
                 setInvoices(response.data.bills ?? []);
                 setIsLoading(false);
                 setIsPending(false);

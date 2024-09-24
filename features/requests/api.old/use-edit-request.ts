@@ -4,32 +4,35 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from 'js-cookie';
 import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
-export const useDeleteRequest = (id?: string) => {
+type RequestType = any
+
+export const useEditRequest = (id?: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
     ResponseType,
-    Error
+    Error,
+    RequestType
   >({
-    mutationFn: async () => {
-      // const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token'), // Ajouter le token dans l'en-tête
-      //   },
-      //   withCredentials: true, // Assurer l'envoi des cookies
-      // });
-      const response = await axios.post('/api/requests', { enpoint: '/delete', id: id, accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+    mutationFn: async (payload) => {
+      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, payload, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        withCredentials: true,
+      });
+      return response.data;
     },
     onSuccess: () => {
-      toast.success("Requests deleted.")
+      toast.success("Request updated.")
       queryClient.invalidateQueries({ queryKey: ["request", { id }] });
       queryClient.invalidateQueries({ queryKey: ["requests?status=validated"] });
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+
     },
     onError: () => {
-      toast.error("Failed to delete requests.")
+      toast.error("Failed to edit request.")
     },
   });
 

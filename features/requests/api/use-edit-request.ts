@@ -15,13 +15,14 @@ export const useEditRequest = (id?: string) => {
     RequestType
   >({
     mutationFn: async (payload) => {
-      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, payload, {
-        headers: {
-          'Authorization': Cookies.get('access_token')
-        },
-        withCredentials: true,
-      });
-      return response.data;
+      // const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, payload, {
+      //   headers: {
+      //     'Authorization': Cookies.get('access_token')
+      //   },
+      //   withCredentials: true,
+      // });
+      const response = await axios.post('/api/requests', { enpoint: '/edit-request', id: id, data:payload ,accessToken: Cookies.get('access_token') });
+        return response.data?.data;
     },
     onSuccess: () => {
       toast.success("Request updated.")

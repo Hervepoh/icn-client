@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 
 type RequestType = any;
 
-export const useBulkSaveRequestDetails = (id?: string) => {
+export const useBulkRequestDetails = (id?: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
@@ -15,23 +15,23 @@ export const useBulkSaveRequestDetails = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      // const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   withCredentials: true,
-      // });
-      const response = await axios.post('/api/requests', { enpoint: '/save', id: id, data: json ,accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+      const response = await axios.post(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        withCredentials: true,
+      });
+      return response.data;
     },
     onSuccess: () => {
-      toast.success("Save successfully")
+      toast.success("Add successfully")
       queryClient.invalidateQueries({ queryKey: ["requests-details", { id }] });
       //queryClient.invalidateQueries({ queryKey: ["summary"] });
 
     },
-    onError: () => {
-      toast.error("Failed to Save.")
+    onError: (error) => {
+      toast.warning(error.message)
+      toast.error("Failed to Add.")
     },
   });
 

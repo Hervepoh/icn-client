@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react'
 
 import { useOpenRequest } from '@/features/requests/hooks/use-open-request';
-import { useEditRequest } from '@/features/requests/api/use-edit-request';
-import { useDeleteRequest } from '@/features/requests/api/use-delete-request';
+import { useEditRequest } from '@/features/requests/api.old/use-edit-request';
+import { useDeleteRequest } from '@/features/requests/api.old/use-delete-request';
 
 import { Edit, MoreHorizontal, Send, Trash } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm';

@@ -64,16 +64,17 @@ export const SearchByRegroupForm = ({
         startTransition(async () => {
             setIsLoading(true);
             setIsPending(true);
-            const config: AxiosRequestConfig = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=regroup&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
-                headers: { 'Authorization': Cookies.get('access_token')},
-                withCredentials: true, 
-                data: ''
-            };
+            // const config: AxiosRequestConfig = {
+            //     method: 'get',
+            //     maxBodyLength: Infinity,
+            //     url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=regroup&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
+            //     headers: { 'Authorization': Cookies.get('access_token')},
+            //     withCredentials: true, 
+            //     data: ''
+            // };
             try {
-                const response = await axios.request(config);
+                // const response = await axios.request(config);
+                const response = await axios.post('/api/search' ,{ enpoint: '/search-by-regroup', values: values , accessToken : Cookies.get('access_token')});
                 setInvoices(response.data.bills ?? []);
             } catch (error) {
                 setError("something went wrong");

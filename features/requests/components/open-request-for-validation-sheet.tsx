@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/sheet";
 
 import { useConfirm } from "@/hooks/use-confirm";
-import { useGetRequest } from "@/features/requests/api/use-get-request";
-import { useEditRequest } from "@/features/requests/api/use-edit-request";
+import { useGetRequest } from "@/features/requests/api.old/use-get-request";
+import { useEditRequest } from "@/features/requests/api.old/use-edit-request";
 import { useOpenRequestValidation } from "@/features/requests/hooks/use-open-request-for-validation";
 import { RequestFormForValidation } from "@/features/requests/components/request-form-for-validation";
 import { status } from "@/config/status.config";

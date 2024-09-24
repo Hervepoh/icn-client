@@ -12,14 +12,13 @@ export const useDeleteRequest = (id?: string) => {
     Error
   >({
     mutationFn: async () => {
-      // const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token'), // Ajouter le token dans l'en-tête
-      //   },
-      //   withCredentials: true, // Assurer l'envoi des cookies
-      // });
-      const response = await axios.post('/api/requests', { enpoint: '/delete', id: id, accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+      const response = await axios.delete(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, {
+        headers: {
+          'Authorization': Cookies.get('access_token'), // Ajouter le token dans l'en-tête
+        },
+        withCredentials: true, // Assurer l'envoi des cookies
+      });
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Requests deleted.")

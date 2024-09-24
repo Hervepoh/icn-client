@@ -65,17 +65,18 @@ export const SearchByContractForm = ({
         startTransition(async () => {
             setIsLoading(true);
             setIsPending(true);
-            const config: AxiosRequestConfig = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=contract&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
-                headers: {'Authorization': Cookies.get('access_token')},
-                withCredentials: true, // Set this to true
-                data: ''
-            };
-            console.log("config",config);
+            // const config: AxiosRequestConfig = {
+            //     method: 'get',
+            //     maxBodyLength: Infinity,
+            //     url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=contract&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
+            //     headers: {'Authorization': Cookies.get('access_token')},
+            //     withCredentials: true, // Set this to true
+            //     data: ''
+            // };
+            // console.log("config",config);
             try {
-                const response = await axios.request(config);
+                //const response = await axios.request(config);
+                const response = await axios.post('/api/search' ,{ enpoint: '/search-by-contract', values: values , accessToken : Cookies.get('access_token')});
                 setInvoices(response.data.bills  ?? []);
             } catch (error) {
                 setError("something went wrong");

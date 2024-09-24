@@ -15,14 +15,13 @@ export const useBulkSaveRequestDetails = (id?: string) => {
     RequestType
   >({
     mutationFn: async (json) => {
-      // const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   withCredentials: true,
-      // });
-      const response = await axios.post('/api/requests', { enpoint: '/save', id: id, data: json ,accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+      const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${id}`, json, {
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        withCredentials: true,
+      });
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Save successfully")

@@ -19,19 +19,19 @@ export const useGetRequests = (filter:string="") => {
   const query = useQuery({
     queryKey: ["requests"+filter, { from, to, accountId }],
     queryFn: async () => {
-      // const config: AxiosRequestConfig = {
-      //   method: 'get',
-      //   maxBodyLength: Infinity,
-      //   url: `${NEXT_PUBLIC_SERVER_URI}/requests`+filter,
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   withCredentials: true, // Set this to true
-      //   data: ''
-      // };
+      const config: AxiosRequestConfig = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${NEXT_PUBLIC_SERVER_URI}/requests`+filter,
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        withCredentials: true, // Set this to true
+        data: ''
+      };
 
       try {
-        const response = await axios.post('/api/requests', { enpoint: '/list', filter: filter,accessToken: Cookies.get('access_token') });
+        const response = await axios.request(config);
         return response.data?.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
