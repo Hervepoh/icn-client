@@ -21,7 +21,7 @@ export const useEditRequest = (id?: string) => {
       //   },
       //   withCredentials: true,
       // });
-      const response = await axios.post('/api/requests', { enpoint: '/edit-request', id: id, data:payload ,accessToken: Cookies.get('access_token') });
+      const response = await axios.post('/api/update-request', { enpoint: '/edit-request', id: id, data:payload ,accessToken: Cookies.get('access_token') });
         return response.data?.data;
     },
     onSuccess: () => {

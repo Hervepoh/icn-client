@@ -26,7 +26,7 @@ export const useCreateRequest = () => {
       //   withCredentials: true, // Set this to true
       //   data: json
       // };
-      const response = await axios.post('/api/requests', { enpoint: '/create', data: json, accessToken: Cookies.get('access_token') });
+      const response = await axios.post('/api/create-request', { data: json, accessToken: Cookies.get('access_token') });
       return response.data?.data;
     },
     onSuccess: () => {

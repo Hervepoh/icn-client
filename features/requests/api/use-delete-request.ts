@@ -18,7 +18,7 @@ export const useDeleteRequest = (id?: string) => {
       //   },
       //   withCredentials: true, // Assurer l'envoi des cookies
       // });
-      const response = await axios.post('/api/requests', { enpoint: '/delete', id: id, accessToken: Cookies.get('access_token') });
+      const response = await axios.post('/api/delete-request', { enpoint: '/delete', id: id, accessToken: Cookies.get('access_token') });
       return response.data?.data;
     },
     onSuccess: () => {
