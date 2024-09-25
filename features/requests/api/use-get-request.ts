@@ -10,21 +10,20 @@ export const useGetRequest = (id?: string) => {
     enabled: !!id,   // Fetch only if we have the id
     queryKey: ["request", { id }],
     queryFn: async () => {
-      // const config: AxiosRequestConfig = {
-      //   method: 'get',
-      //   maxBodyLength: Infinity,
-      //   url: `${NEXT_PUBLIC_SERVER_URI}/requests/${id}`,
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   withCredentials: true, // Set this to true
-      //   data: ''
-      // };
+      const config: AxiosRequestConfig = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${NEXT_PUBLIC_SERVER_URI}/requests/${id}`,
+        headers: {
+          'Authorization': Cookies.get('access_token')
+        },
+        withCredentials: true, // Set this to true
+        data: ''
+      };
 
       try {
-        const response = await axios.post('/api/get-request', { enpoint: '/request', id: id, accessToken: Cookies.get('access_token') });
-         console.log("response: " + JSON.stringify(response));
-        // return response.data?.data;
+        const response = await axios.request(config);
+        return response.data?.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
           throw error;
