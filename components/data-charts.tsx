@@ -8,7 +8,7 @@ import { useGetSummary } from "@/features/summary/api/use-get-summary";
 export const DataCharts = () => {
 
    const { data, isLoading } = useGetSummary();
-  console.log(data);
+
   // const isLoading = true;
   //  const datas = {
   //   days: [

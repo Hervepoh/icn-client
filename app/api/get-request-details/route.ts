@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export async function POST(request: NextRequest) {
     const data = await request.json();
-
+ 
     if (!NEXT_PUBLIC_SERVER_URI) {
         return NextResponse.json(
             { error: 'Server URI is not defined' },
@@ -16,14 +16,13 @@ export async function POST(request: NextRequest) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `${NEXT_PUBLIC_SERVER_URI}/requests/${data.id}`,
+            url: `${NEXT_PUBLIC_SERVER_URI}/requests-details/${data.id}`,
             headers: {
                 'Authorization': data.accessToken,
                 'Content-Type': 'application/json',
             },
             data: data
         };
-
 
         const resultData = await axios.request(config);
 
@@ -32,7 +31,5 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         return NextResponse.json({ error: 'Failed to connect to the API' }, { status: 500 });
     }
-
-
-
 }
+

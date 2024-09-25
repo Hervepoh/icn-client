@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     
     if (data.enpoint == '/search-by-invoice') {
         try {
-            const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=regroup&value=${data.values.value}&from=${format(data.values.from, "yyyy-MM-dd")}&to=${format(data.values.to, "yyyy-MM-dd")}`, {
+            const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${data.values.value}`, {
                 method: 'GET',
                 headers: {
                     // 'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
             });
 
             const result = await response.json();
-
+            
             if (!response.ok) {
                 return NextResponse.json({ ...result }, { status: response.status });
             }

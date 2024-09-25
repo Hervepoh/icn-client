@@ -3,7 +3,7 @@ import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
 export async function POST(request: NextRequest) {
     const data = await request.json();
-     console.log("data",data)
+ 
     if (!NEXT_PUBLIC_SERVER_URI) {
         return NextResponse.json(
             { error: 'Server URI is not defined' },

@@ -20,7 +20,7 @@ export const useGetRequestDetails = (id?: string) => {
       // };
 
       try {
-        const response = await axios.post('/api/requests', { enpoint: '/request-details', id: id, accessToken: Cookies.get('access_token') });
+        const response = await axios.post('/api/get-request-details', { id: id, accessToken: Cookies.get('access_token') });
         return response.data?.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {

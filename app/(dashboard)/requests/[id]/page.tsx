@@ -149,13 +149,16 @@ export default function TransactionsDetails() {
         const newData = [...finalData];
         // Preparing updates datas
         const updates = newData.map((row) => ({
-            updateOne: {
-                filter: { id: row.id }, // utiliser l'ID de la ligne
-                update: {
-                    selected: row.selected,
-                    amountTopaid: row.amountTopaid
-                },
-            },
+            // updateOne: {
+            //     filter: { id: row.id }, // utiliser l'ID de la ligne
+            //     update: {
+            //         selected: row.selected,
+            //         amountTopaid: row.amountTopaid
+            //     },
+            // },
+            id: row.id,
+            selected: row.selected,
+            amountTopaid: row.amountTopaid
         }));
         SaveDeltailsTransactionsQuery.mutate(updates);
     };
@@ -225,7 +228,7 @@ export default function TransactionsDetails() {
         <LoadingComponent />
     }
     
-    console.log("finalData",finalData);
+    //console.log("finalData",finalData);
     
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
@@ -515,7 +518,7 @@ export default function TransactionsDetails() {
                                                                 name: r.original[3].toString(),
                                                                 amountUnpaid: r.original[5]
                                                             }));
-                                                            console.log("AddDeltailsTransactionsQuery", data)
+                                                            // console.log("AddDeltailsTransactionsQuery", data)
                                                             AddDeltailsTransactionsQuery.mutate(data);
                                                         }}
                                                         disabled={disable}

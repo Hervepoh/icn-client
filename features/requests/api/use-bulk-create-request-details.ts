@@ -21,7 +21,8 @@ export const useBulkRequestDetails = (id?: string) => {
       //   },
       //   withCredentials: true,
       // });
-      const response = await axios.post('/api/requests', { enpoint: '/create-request', id: id , data: json , accessToken: Cookies.get('access_token') });
+    
+      const response = await axios.post('/api/create-request-details', {  id: id , data: json , accessToken: Cookies.get('access_token') });
         return response.data?.data;
     },
     onSuccess: () => {

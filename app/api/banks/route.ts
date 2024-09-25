@@ -6,8 +6,7 @@ export async function POST(request: NextRequest) {
 
     if (!NEXT_PUBLIC_SERVER_URI) {
         return NextResponse.json(
-            { error: 'Server URI is not defined' },
-            { status: 500 }
+            { error: 'Server URI is not defined' , status: 500},
         );
     }
 

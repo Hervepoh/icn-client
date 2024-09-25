@@ -129,7 +129,7 @@ export const columns: ColumnDef<ResponseType>[] = [
         <div className='flex w-[100px] items-center'>
           <Badge
             variant={statusStyles[rowStatus] || "primary"}
-            className="px-3.5 py-2.5">
+            className="px-3.5 py-2.5 text-center">
             {status.icon && (
               <status.icon className={cn("mr-2 h-4 w-4 text-muted-foreground", status.iconColor)} />
             )}
@@ -259,7 +259,6 @@ export const columns: ColumnDef<ResponseType>[] = [
     id: "actions",
     header: ({ column }) => ("Actions "),
     cell: ({ row }) => {
-      console.log("row.original.status === status[3] : ", row.original.status === status[3]);
       return row.original.status === status[1] && <Actions id={row.original.id} />
         || row.original.status === status[2] && <ActionsValidations id={row.original.id} />
         || row.original.status === status[3] && <ActionsAssignTo id={row.original.id} />

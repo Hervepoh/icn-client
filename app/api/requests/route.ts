@@ -11,8 +11,6 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
-    console.log("we arrive here in create")
-    console.log("data",data)
 
     // GET
     if (data.enpoint == '/list') {
@@ -40,6 +38,30 @@ export async function POST(request: NextRequest) {
     }
 
 
+    if (data.enpoint == '/create-bulk') {
+
+        try {
+            const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/requests/bulk`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': data.accessToken
+                },
+                body:  JSON.stringify(data.data),
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                return NextResponse.json({ ...result }, { status: response.status });
+            }
+
+            return NextResponse.json({ ...result });
+        } catch (error) {
+            return NextResponse.json({ error: 'Failed to connect to the API' }, { status: 500 });
+        }
+    }
 
     // if (data.enpoint == '/get-status') {
     //     try {
@@ -110,31 +132,9 @@ export async function POST(request: NextRequest) {
     //     }
     // }
 
-
-    // if (data.enpoint == '/create-bulk') {
-    //     try {
-    //         const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/requests-bulk`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': data.accessToken
-    //             },
-    //             body: data.json,
-    //             credentials: 'include'
-    //         });
-
-    //         const result = await response.json();
-
-    //         if (!response.ok) {
-    //             return NextResponse.json({ ...result }, { status: response.status });
-    //         }
-
-    //         return NextResponse.json({ ...result });
-    //     } catch (error) {
-    //         return NextResponse.json({ error: 'Failed to connect to the API' }, { status: 500 });
-    //     }
-    // }
-    // if (data.enpoint == '/create-request') {
+    // if (data.enpoint == '/create-request-detail') {
+        
+    // console.log("ok")
     //     try {
     //         const response = await fetch(`$${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${data.id}`, {
     //             method: 'POST',
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     //                 'Content-Type': 'application/json',
     //                 'Authorization': data.accessToken
     //             },
-    //             body: data.json,
+    //             body: data.data,
     //             credentials: 'include'
     //         });
 

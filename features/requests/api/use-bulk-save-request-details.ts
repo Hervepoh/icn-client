@@ -21,7 +21,7 @@ export const useBulkSaveRequestDetails = (id?: string) => {
       //   },
       //   withCredentials: true,
       // });
-      const response = await axios.post('/api/requests', { enpoint: '/save', id: id, data: json ,accessToken: Cookies.get('access_token') });
+      const response = await axios.post('/api/save-request-details', { id: id, data: json ,accessToken: Cookies.get('access_token') });
       return response.data?.data;
     },
     onSuccess: () => {

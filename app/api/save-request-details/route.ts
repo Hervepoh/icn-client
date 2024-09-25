@@ -1,38 +1,36 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
-import axios from 'axios';
 
 export async function POST(request: NextRequest) {
     const data = await request.json();
-
+ 
     if (!NEXT_PUBLIC_SERVER_URI) {
         return NextResponse.json(
             { error: 'Server URI is not defined' },
             { status: 500 }
         );
     }
-
+    console.log(data);
     try {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: `${NEXT_PUBLIC_SERVER_URI}/requests/${data.id}`,
+        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${data.id}`, {
+            method: 'PUT',
             headers: {
-                'Authorization': data.accessToken,
                 'Content-Type': 'application/json',
+                'Authorization': data.accessToken
             },
-            data: data
-        };
+            body:JSON.stringify(data.data),
+            credentials: 'include'
+        });
 
+        const result = await response.json();
 
-        const resultData = await axios.request(config);
+        if (!response.ok) {
+            return NextResponse.json({ ...result }, { status: response.status });
+        }
 
-        return NextResponse.json(resultData.data);
-
+        return NextResponse.json({ ...result });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to connect to the API' }, { status: 500 });
     }
-
-
-
 }
+

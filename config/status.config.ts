@@ -45,6 +45,12 @@ export const statuses = [
         iconColor: 'text-white',
     },
     {
+        value: 'pending_commercial_input',
+        label: 'Waiting Commercial input',
+        icon: StopwatchIcon,
+        iconColor: 'text-white',
+    },
+    {
         value: 'processing',
         label: 'In process',
         icon: StopwatchIcon,
@@ -64,7 +70,7 @@ export const statusStyles: { [key: string]: "default" | "success" | "destructive
     "initiated": "primary",
     "validated": "success",
     "rejected": "destructive",
-    "pending_commercial_input": "warning",
+    "pending_commercial_input": "primary",
     "pending_finance_validation": "warning",
     "processing": "default",
     "treated": "success",

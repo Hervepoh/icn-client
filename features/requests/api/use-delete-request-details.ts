@@ -22,8 +22,9 @@ export const useDeleteRequestDetails = (requestId: string) => {
       //   data: {},
       //   withCredentials: true,
       // });
-      const response = await axios.post('/api/requests', { enpoint: '/delete-request-detail', requestId: requestId, accessToken: Cookies.get('access_token') });
-      return response.data?.data;
+      const response = await axios.post('/api/delete-request-details', {id: id, accessToken: Cookies.get('access_token') });
+      //return response.data?.data;
+      return response.data;
     },
     onSuccess: () => {
       toast.success("Invoice removed successfully.")

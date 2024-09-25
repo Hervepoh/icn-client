@@ -32,7 +32,6 @@ type Props = {
 }
 
 export const ActionsInvoicesAdd = ({ id }: Props) => {
-    console.log("enter ActionsInvoicesAdd")
     const { user } = useUserStore();
     const router = useRouter();
     const handleSellTask = async () => {
