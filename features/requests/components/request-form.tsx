@@ -88,7 +88,6 @@ export const RequestForm = (
     }
 
     const handleDelete = () => {
-        console.log("delete");
         onDelete?.();
     }
 
