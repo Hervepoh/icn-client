@@ -21,7 +21,8 @@ export const useGetPayModes = () => {
       };
 
       try {
-        const response = await axios.request(config);
+       // const response = await axios.request(config);
+       const response = await axios.post('/api/payModes', { enpoint: '/list', accessToken: Cookies.get('access_token') });
         return response.data?.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
