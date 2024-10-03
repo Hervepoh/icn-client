@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { status, statuses, statusStyles } from "@/config/status.config";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { Actions } from "./actions";
 
 interface ResponseType {
   id: string;
@@ -136,9 +137,23 @@ export const columns: ColumnDef<ResponseType>[] = [
   },
 
   {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Created By' />
+    ),
+  },
+
+  {
     accessorKey: "validatedBy",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='validatedBy' />
+    ),
+  },
+
+  {
+    accessorKey: "assignTo",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='AssignTo' />
     ),
   },
 
@@ -183,6 +198,7 @@ export const columns: ColumnDef<ResponseType>[] = [
       return <span>{format(date, "dd/MM/yyyy HH:mm:ss")}</span>;
     },
   },
+ 
 
 
   {
@@ -196,12 +212,12 @@ export const columns: ColumnDef<ResponseType>[] = [
       return <span>{format(date, "dd/MM/yyyy HH:mm:ss")}</span>;
     },
   },
-  
+
+
   {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Created By' />
-    ),
+    id: "actions",
+    header: ({ column }) => ("Actions "),
+    cell: ({ row }) => <Actions id={row.original.id} />,
   },
 
 

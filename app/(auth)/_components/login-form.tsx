@@ -50,7 +50,6 @@ export const LoginForm = (props: Props) => {
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // console.log(values);
 
     startTransition(async () => {
       setErrorMessage("");

@@ -98,7 +98,6 @@ export function DataTable<TData, TValue>({
                                 const ok = await confirm();
                                 if (ok) {
                                     // Logique for delete
-                                    // console.log("Élément supprimé");
                                     onDelete(table.getFilteredSelectedRowModel().rows);
                                     table.resetRowSelection();
                                 }

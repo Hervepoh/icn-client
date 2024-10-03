@@ -1,9 +1,12 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { CircleCheckBig, ListTodo, Loader2, Save, ShoppingBag, Trash } from "lucide-react";
+import { CircleCheckBig, Info, ListTodo, Loader2, Save, ShoppingBag, Trash } from "lucide-react";
 import { BiPlusCircle, BiSearch } from "react-icons/bi";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 import {
     Card,
@@ -20,6 +23,11 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger
+} from "@/components/ui/hover-card";
+import {
     Table,
     TableBody,
     TableCaption,
@@ -29,42 +37,36 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable"
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton"
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { DataTable } from './_components/data-table';
+import { InfoCard } from "@/components/info-card";
 
-import { cn } from "@/lib/utils";
+import { DataTable } from './_components/data-table';
+import { columns } from "./_components/columns";
 
 import { useGetRequest } from "@/features/requests/api/use-get-request";
+import { useGetRequestDetails } from "@/features/requests/api/use-get-request-details";
+import { useBulkRequestDetails } from "@/features/requests/api/use-bulk-create-request-details";
+import { useBulkSaveRequestDetails } from "@/features/requests/api/use-bulk-save-request-details";
+import { useDeleteRequestDetails } from "@/features/requests/api/use-delete-request-details";
 import { SearchByInvoiceForm } from "@/features/search/components/search-by-invoice-form";
 import { SearchByContractForm } from "@/features/search/components/search-by-contract-form";
 import { SearchByRegroupForm } from "@/features/search/components/search-by-regroup-form";
 import { SearchByCodeCliForm } from "@/features/search/components/search-by-codecli-from";
-import { columns } from "./_components/columns";
 import { SearchByFileForm } from "@/features/search/components/search-by-file-form";
-import { Input } from "@/components/ui/input";
-import { useGetRequestDetails } from "@/features/requests/api/use-get-request-details";
-import { Button } from "@/components/ui/button";
-import { useBulkRequestDetails } from "@/features/requests/api/use-bulk-create-request-details";
-import { useBulkSaveRequestDetails } from "@/features/requests/api/use-bulk-save-request-details";
-import { useEditRequest } from "@/features/requests/api/use-edit-request"
-import { InfoCard } from "@/components/info-card";
-import { useDeleteRequestDetails } from "@/features/requests/api/use-delete-request-details";
-import { toast } from "sonner";
-import { format } from "date-fns";
+import { useEditRequest } from '@/features/requests/api/use-edit-request';
+import { status } from "@/config/status.config";
+
 
 interface Invoice {
     id: string;
     number: string;
     contract: string;
     amount: number;
+    amountToPaid?: number;
 }
 
 export default function TransactionsDetails() {
@@ -81,6 +83,8 @@ export default function TransactionsDetails() {
         data: details_data
     } = useGetRequestDetails(params.id)
 
+    const EditTransactionsQuery = useEditRequest(params.id);
+
     const AddDeltailsTransactionsQuery = useBulkRequestDetails(params.id);
     const SaveDeltailsTransactionsQuery = useBulkSaveRequestDetails(params.id);
     const DeleteDetailTransactionsQuery = useDeleteRequestDetails(params.id);
@@ -88,6 +92,7 @@ export default function TransactionsDetails() {
     const disable = AddDeltailsTransactionsQuery.isPending
         || SaveDeltailsTransactionsQuery.isPending
         || DeleteDetailTransactionsQuery.isPending
+        || EditTransactionsQuery.isPending
 
     const isLoading = request_isLoading || details_isLoading;
 
@@ -148,19 +153,15 @@ export default function TransactionsDetails() {
     const handleSaveChange = () => {
         const newData = [...finalData];
         // Preparing updates datas
-        const updates = newData.map((row) => ({
-            // updateOne: {
-            //     filter: { id: row.id }, // utiliser l'ID de la ligne
-            //     update: {
-            //         selected: row.selected,
-            //         amountTopaid: row.amountTopaid
-            //     },
-            // },
-            id: row.id,
-            selected: row.selected,
-            amountTopaid: row.amountTopaid
-        }));
-        SaveDeltailsTransactionsQuery.mutate(updates);
+        if (newData.length > 0) {
+            const updates = newData.map((row) => ({
+                id: row.id,
+                selected: row.selected,
+                amountTopaid: row.amountTopaid
+            }));
+            SaveDeltailsTransactionsQuery.mutate(updates);
+        }
+
     };
     //My part
     const handleDisable = () => {
@@ -170,18 +171,22 @@ export default function TransactionsDetails() {
         }
 
     }
+
     const handleSubmit = async () => {
         handleSaveChange()
         //EndPoint for status change of the request
         const update = {
             status: "processing"
         }
-        //EditStatusAfterSublit.mutate(update)
-        router.push('/requests')
-        return "Updated";
+        EditTransactionsQuery.mutate({ status: status[7] }, {
+            onSuccess: () => {
+                toast.success('Task Completed')
+                router.push('/requests');
+            },
+        });
 
     }
-    /** */
+
 
     const handleQualityControl = () => {
         // Build finalData and give every element an attribut isDuplicate
@@ -194,12 +199,13 @@ export default function TransactionsDetails() {
         const selectedRows = newData.filter((row) => row.selected);
         const newTotalToPaid = selectedRows.reduce((acc, cur) => acc + cur.amountTopaid, 0);
 
-        if (data?.amount === newTotalToPaid && !newData.some((row) => row.isDuplicate)) {
+
+        if (data?.amount == newTotalToPaid && !selectedRows.some((row) => row.isDuplicate)) {
+            toast.success("Very thing look's good");
             setDisableSubmit(false);
+        } else {
+            toast.error("Please fix the different issue before");
         }
-
-        toast.info("Quantity controle done !")
-
     };
 
 
@@ -227,12 +233,11 @@ export default function TransactionsDetails() {
     if (isLoading) {
         <LoadingComponent />
     }
-    
-    //console.log("finalData",finalData);
-    
+
+
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-            <div className="grid grid-cols-1 lg:grid-cols-4 md:gap-8 pb-2 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 md:gap-8 pb-2 mb-8">
                 <Card className='border-none drop-shadow-sm '>
                     <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
                         <div>
@@ -340,7 +345,7 @@ export default function TransactionsDetails() {
 
                     </CardContent>
                 </Card>
-                <Card className='border-none drop-shadow-sm col-span-3'>
+                <Card className='border-none drop-shadow-sm col-span-4'>
                     <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
                         <div className='space-y-2'>
                             <CardTitle className="text-2xl line-clamp-1">
@@ -383,26 +388,28 @@ export default function TransactionsDetails() {
                                                 <span className="font-semibold text-xl">Panier : {` `}
                                                     {totalToPaid} {totalToPaid !== parseFloat(data?.amount) ? "<>" : "=="}  {data?.amount}</span>
                                             </div>
+                                            {data.statusId == 6 &&
+                                                <div className="flex gap-2 flex-col-reverse">
+                                                    <Button
+                                                        onClick={() => handleQualityControl()}
+                                                        size="sm"
+                                                        className='w-full lg:w-auto'>
+                                                        <ListTodo className='size-4 mr-2' />
+                                                        Quality control
+                                                    </Button>
 
-                                            <div className="flex gap-2 flex-col-reverse">
-                                                <Button
-                                                    onClick={() => handleQualityControl()}
-                                                    size="sm"
-                                                    className='w-full lg:w-auto'>
-                                                    <ListTodo className='size-4 mr-2' />
-                                                    Quality control
-                                                </Button>
-
-                                                <Button
-                                                    disabled={disableSubmit}
-                                                    variant={disableSubmit ? "default" : "success"}
-                                                    onClick={() => ""}
-                                                    size="sm"
-                                                    className='w-full lg:w-auto'>
-                                                    <CircleCheckBig className='size-4 mr-2' />
-                                                    Submit
-                                                </Button>
-                                            </div>
+                                                    <Button
+                                                        disabled={disableSubmit}
+                                                        variant={disableSubmit ? "default" : "success"}
+                                                        onClick={() => handleSubmit()}
+                                                        size="sm"
+                                                        className='w-full lg:w-auto'>
+                                                        <CircleCheckBig className='size-4 mr-2' />
+                                                        Submit
+                                                    </Button>
+                                                </div>
+                                            }
+                                            {data.statusId != 6 && <div />}
 
 
                                         </div>
@@ -413,6 +420,7 @@ export default function TransactionsDetails() {
                                                 <TableHeader className="bg-gray-200 text-white">
                                                     <TableRow>
                                                         <TableHead></TableHead>
+                                                        <TableHead style={{ width: '5px' }}>I</TableHead>
                                                         <TableHead className="font-bold">Contract</TableHead>
                                                         <TableHead className="font-bold">Invoice</TableHead>
                                                         <TableHead className="font-bold">Name</TableHead>
@@ -430,13 +438,22 @@ export default function TransactionsDetails() {
                                                                 color: row.isDuplicate ? 'white' : 'inherit'
                                                             }}
                                                         >
+
                                                             <TableCell className="font-medium">
                                                                 <Input
                                                                     type="checkbox"
                                                                     checked={row.selected}
+                                                                    disabled={data.statusId != 6}
                                                                     onChange={() => handleCheckboxChange(i)}
                                                                 />
-
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {row.amountUnpaid !== row.amountTopaid && <HoverCard>
+                                                                    <HoverCardTrigger> <Info /></HoverCardTrigger>
+                                                                    <HoverCardContent>
+                                                                        amountTopaid – amountUnpaid are different
+                                                                    </HoverCardContent>
+                                                                </HoverCard>}
                                                             </TableCell>
                                                             <TableCell className="font-medium">{row.contract}</TableCell>
                                                             <TableCell className="font-medium">{row.invoice}</TableCell>
@@ -448,19 +465,21 @@ export default function TransactionsDetails() {
                                                                     value={row.amountTopaid}
                                                                     onChange={e => handleInputChange(i, parseFloat(e.target.value))}
                                                                     min={0}
+                                                                    disabled={data.statusId != 6}
                                                                     className="w-[130px]"
                                                                     style={{ color: row.isDuplicate ? 'red' : 'inherit' }}
                                                                 />
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="flex items-center justify-center gap-x-1">
-                                                                    <Button
+                                                                    {data.statusId == 6 && <Button
                                                                         disabled={disable}
                                                                         onClick={() => handleDelete(row.id)}
                                                                         size="sm"
                                                                         variant="ghost">
                                                                         <Trash className='size-5' />
-                                                                    </Button>
+                                                                    </Button>}
+
                                                                     {row.isDuplicate && <InfoCard content={
                                                                         row.isDuplicate
                                                                             ? `Key contract-invoice : ${row.contract}-${row.invoice} is duplicate`
@@ -479,18 +498,20 @@ export default function TransactionsDetails() {
                                                 </TableFooter>
                                             </Table>
 
-                                            <Button
-                                                disabled={disable}
-                                                onClick={() => handleSaveChange()}
-                                                size="sm"
-                                                className='w-full mt-10 lg:w-auto'>
-                                                <Save className='size-4 mr-2' />
-                                                Save changes
-                                            </Button>
+                                            {data.statusId == 6 &&
+                                                <Button
+                                                    disabled={disable || finalData.length == 0}
+                                                    onClick={() => handleSaveChange()}
+                                                    size="sm"
+                                                    className='w-full mt-10 lg:w-auto'>
+                                                    <Save className='size-4 mr-2' />
+                                                    Save changes
+                                                </Button>
+                                            }
                                         </div>
                                     </>
                                     :
-                                    <ScrollArea className="flex h-[800px] items-center justify-center p-6 rounded-md">
+                                    <ScrollArea className="flex  h-full w-full items-center justify-center p-6 rounded-md">
                                         {
                                             searchIsLoading ? (<Card className='border-none drop-shadow-sm'>
                                                 <CardHeader>
@@ -506,23 +527,44 @@ export default function TransactionsDetails() {
                                                         <div>Just Search what you want</div>
                                                     </CardContent>
                                                 </Card>) :
-                                                    <DataTable
-                                                        columns={columns}
-                                                        data={invoices}
-                                                        filterKey={"3"}
-                                                        onSubmit={(row: any[]) => {
-                                                            const data = row.map((r: any) =>
-                                                            ({
-                                                                contract: r.original[1].toString(),
-                                                                invoice: r.original[2].toString(),
-                                                                name: r.original[3].toString(),
-                                                                amountUnpaid: r.original[5]
-                                                            }));
-                                                            // console.log("AddDeltailsTransactionsQuery", data)
-                                                            AddDeltailsTransactionsQuery.mutate(data);
-                                                        }}
-                                                        disabled={disable}
-                                                    />
+                                                    <div className="overflow-x-auto w-full">
+                                                        <DataTable
+                                                            columns={columns}
+                                                            data={invoices}
+                                                            filterKey={"3"}
+                                                            onSubmit={(row: any[]) => {
+
+                                                                // Filter rows where r.original[6] is empty
+                                                                const filteredData = row.filter((r: any) => !r.original[7]);
+
+                                                                // Map the filtered data
+                                                                const data = filteredData.map((r: any) => ({
+                                                                    contract: r.original[1].toString(),
+                                                                    invoice: r.original[2].toString(),
+                                                                    name: r.original[3] ? r.original[3].toString() : "",
+                                                                    amountUnpaid: r.original[5],
+                                                                    amountTopaid: r.original[6] ?? r.original[5],
+                                                                }));
+
+                                                                // Check if there's data to mutate
+                                                                if (data.length > 0) {
+                                                                    AddDeltailsTransactionsQuery.mutate(data);
+                                                                } else {
+                                                                    toast.info("No valid rows to add.")
+                                                                }
+                                                                // const data = row.map((r: any) =>
+                                                                // ({
+                                                                //     contract: r.original[1].toString(),
+                                                                //     invoice: r.original[2].toString(),
+                                                                //     name: r.original[3] ? r.original[3].toString() : "",
+                                                                //     amountUnpaid: r.original[5],
+                                                                //     amountTopaid: r.original[6] ?? r.original[5],
+                                                                // }));
+                                                                // AddDeltailsTransactionsQuery.mutate(data);
+                                                            }}
+                                                            disabled={disable}
+                                                        />
+                                                    </div>
                                         }
                                     </ScrollArea>
                         }

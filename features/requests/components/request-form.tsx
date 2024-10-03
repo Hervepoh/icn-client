@@ -71,7 +71,7 @@ export const RequestForm = (
         onCreatePayMode,
         editable = true
     }: Props) => {
-    console.log("payModeOptions",payModeOptions);
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: defaultValues,
@@ -80,7 +80,7 @@ export const RequestForm = (
     const handleSubmit = (values: FormValues) => {
         const amount = parseFloat(values.amount);
         const amountInMilliunits = convertAmountToMilliunits(amount);
-        // console.log(values);
+
         onSubmit({
             ...values,
             amount: amountInMilliunits

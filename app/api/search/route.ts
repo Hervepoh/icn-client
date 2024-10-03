@@ -109,8 +109,28 @@ export async function POST(request: NextRequest) {
     }
 
 
-    if (data.enpoint == '/search-by-file') {
+    if (data.enpoint == '/search-paid-or-unpaid-by-invoice') {
 
+        try {
+            const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/search-paid-or-unpaid?by=invoice&value=${data.values.toString()}`, {
+                method: 'GET',
+                headers: {
+                    // 'Content-Type': 'application/json',
+                    'Authorization': data.accessToken
+                },
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                return NextResponse.json({ ...result }, { status: response.status });
+            }
+
+            return NextResponse.json({ ...result });
+        } catch (error) {
+            return NextResponse.json({ error: 'Failed to connect to the API' }, { status: 500 });
+        }
     }
 
 

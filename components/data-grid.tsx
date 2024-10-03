@@ -6,12 +6,16 @@ import { MdPendingActions } from "react-icons/md";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { DataCard, DataCardLoading } from "@/components/data-card";
 import { statuses } from "@/config/status.config";
+import { useUserStore } from "@/features/users/hooks/use-user-store";
 
+type DataType = {
+  data: any;
+  isLoading: boolean;
+}
 
-export const DataGrid= () => {
+export const DataGrid= ({data,isLoading} : DataType) => {
 
-  
-  const { data, isLoading } = useGetSummary();
+ 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pb-2 mb-8">

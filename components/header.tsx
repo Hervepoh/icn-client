@@ -9,11 +9,14 @@ import { HeaderLogo } from "@/components/header-logo";
 import ThemeSwitcher from "@/components/theme-switcher";
 import LocaleSwitcher from "@/components/locale-switcher";
 import { UserNav } from "@/components/user-nav";
+import { usePathname, useRouter } from "next/navigation";
 
 type Props = {}
 
 export const Header = ({ }: Props) => {
-
+    const router = useRouter();
+    const pathname = usePathname();
+   
     return (
 
         <header className={cn(
@@ -38,7 +41,8 @@ export const Header = ({ }: Props) => {
                 </div>
                 <div className="flex flex-col lg:flex-row items-center lg:justify-between">
                     <WelcomeMsg />
-                    <Filters />
+                    {  (pathname === '/') && <Filters /> }
+                    
                 </div>
             </div>
         </header>

@@ -7,24 +7,28 @@ import { language } from "./language.config";
 export const navbarRoutes: {href:string,label:string}[] = [
     {
         href: "/",
-        label: language.overview["fr"]
+        label: language.dashboard["en"]
     },
+    // {
+    //     href: "/dashboard",
+    //     label: language.my_dashboard["en"]
+    // },
     {
         href: "/requests",
-        label: language.demand["fr"]
+        label: language.demand["en"]
     },
     {
-        href: "/unpaid",
-        label: language.aci_unpaid["fr"]
+        href: "/overview",
+        label: language.aci_management["en"]
     },
-    {
-        href: "#",
-        label: language.aci_journal["fr"],
-    },
-    {
-        href: "#",
-        label: language.settings["fr"],
-    },
+    // {
+    //     href: "#",
+    //     label: language.aci_journal["fr"],
+    // },
+    // {
+    //     href: "#",
+    //     label: language.settings["fr"],
+    // },
 ];
 
 /**

@@ -7,11 +7,10 @@ import { EditCategorySheet } from "@/features/categories/components/edit-categor
 
 import { NewRequestSheet } from "@/features/requests/components/new-request-sheet";
 import { EditRequestSheet } from "@/features/requests/components/edit-request-sheet";
+import { ViewRequestSheet } from "@/features/requests/components/view-request-sheet";
 import { OpenRequestForValidationSheet } from "@/features/requests/components/open-request-for-validation-sheet";
 import { OpenRequestForAssignationSheet } from "@/features/requests/components/open-request-for-assignation-sheet";
 
-// import { NewTransactionSheet } from "@/features/transactions/components/new-transaction-sheet";
-// import { EditTransactionSheet } from "@/features/transactions/components/edit-transaction-sheet";
 
 export const SheetProvider = () => {
     const isMounted = useMountedState();
@@ -22,9 +21,9 @@ export const SheetProvider = () => {
         <>
             <NewCategorySheet />
             <EditCategorySheet />
-            
             <NewRequestSheet />
             <EditRequestSheet />
+            <ViewRequestSheet />
             <OpenRequestForValidationSheet />
             <OpenRequestForAssignationSheet />
         </>

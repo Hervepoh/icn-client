@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
-    console.log(data);
+
     try {
         const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${data.id}`, {
             method: 'PUT',

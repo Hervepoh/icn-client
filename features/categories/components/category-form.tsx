@@ -45,12 +45,10 @@ export const CategoryForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        console.log(values);
         onSubmit(values);
     }
 
     const handleDelete = () => {
-        console.log("delete");
         onDelete?.();
     }
 

@@ -2,17 +2,21 @@ export const language = {
      /* p= numero de page, page number
        p= numero de la phrase, phrase number
        */
-    overview: {
-        en : "Overview",
+    dashboard: {
+        en : "Dashboard",
         fr : "Tableau de bord",
+    },
+    my_dashboard: {
+        en : "My dashboard",
+        fr : "Mon tableau de bord",
     },
     demand: {
         en : "Transactions",
         fr : "Transactions",
     },
     aci_management:{
-        en: "ICN Management",
-        fr: "Gestion ACI",
+        en: "Listing ICN",
+        fr: "Listing des ACI",
     },
     aci_unpaid:{
         en: "ICN Unpaid",

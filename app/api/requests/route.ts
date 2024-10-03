@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     //         const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/status${data.search}`, {
     //             method: 'GET',
     //             headers: {
-    //                 // 'Content-Type': 'application/json',
+    //                 'Content-Type': 'application/json',
     //                 'Authorization': data.accessToken
     //             },
     //             credentials: 'include'
@@ -134,7 +134,6 @@ export async function POST(request: NextRequest) {
 
     // if (data.enpoint == '/create-request-detail') {
         
-    // console.log("ok")
     //     try {
     //         const response = await fetch(`$${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${data.id}`, {
     //             method: 'POST',

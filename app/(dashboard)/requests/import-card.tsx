@@ -69,7 +69,7 @@ export const ImportCard = ({
             return newSelectedColumns;
         })
     }
-    //console.log(selectedColumns);
+
     const progress = Object.values(selectedColumns).filter(Boolean).length;
 
     const handleContinue = () => {
@@ -111,7 +111,6 @@ export const ImportCard = ({
            // date: format(parse(item.date, dateFormat, new Date()), outputFormat)
         }));
         formatedData.pop(); // remove the last element
-        //console.log("import-card-data", formatedData)
 
         onSubmit(formatedData);
     }

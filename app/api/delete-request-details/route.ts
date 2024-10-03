@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-       console.log("data", data)
         let config = {
             method: 'delete',
             url: `${NEXT_PUBLIC_SERVER_URI}/requests-details/${data.id}`,

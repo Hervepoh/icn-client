@@ -20,8 +20,6 @@ export async function POST(request: NextRequest) {
             body: "",
             redirect: "follow"
         });
-        //console.log(response)
-        //const result = {} //await response.json();
 
         if (!response.ok) {
             return NextResponse.json({ ...response }, { status: response.status });

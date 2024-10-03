@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         );
     }
     try {
-        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/users/commercial`, {
+        const response = await fetch(`${NEXT_PUBLIC_SERVER_URI}/users/public`, {
             method: 'GET',
             headers: {
                 // 'Content-Type': 'application/json',

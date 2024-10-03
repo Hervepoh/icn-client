@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
 
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
-        message: "You are about to add this item inside your ICN application",
+        message: "You are about to add the selected items to your ICN application, NB only the empty data (will be added) if you agree just click on the “Add” button.",
     });
 
     const table = useReactTable({

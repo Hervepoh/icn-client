@@ -45,12 +45,10 @@ export const BankForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        //console.log(values);
         onSubmit(values);
     }
 
     const handleDelete = () => {
-        console.log("delete");
         onDelete?.();
     }
 

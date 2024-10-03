@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/sheet";
 
 import { useConfirm } from "@/hooks/use-confirm";
-import { useGetUsers } from "@/features/users/api/use-get-users";
+import { useGetCommercialUsers } from "@/features/users/api/use-get-commercial-users";
 import { useGetRequest } from "@/features/requests/api/use-get-request";
 import { useEditRequest } from "@/features/requests/api/use-edit-request";
 import { useOpenRequestAssignation } from "@/features/requests/hooks/use-open-request-for-assignation";
 import { RequestFormForAssignation } from "@/features/requests/components/request-form-for-assignation";
 import { status } from "@/config/status.config";
+
 
 
 export function OpenRequestForAssignationSheet() {
@@ -25,8 +26,8 @@ export function OpenRequestForAssignationSheet() {
         message: "You are about to assign to a key account manager this transaction , Are you sure you want to perform this action?",
     });
 
-    const usersQuery = useGetUsers();
-    const usersOptions = (usersQuery.data?.data ?? []).map(
+    const usersQuery = useGetCommercialUsers();
+    const usersOptions = (usersQuery.data ?? []).map(
         (item: { name: any; id: any; }) => ({
             label: item.name,
             value: item.id

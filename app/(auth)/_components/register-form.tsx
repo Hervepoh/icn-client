@@ -61,8 +61,7 @@ export const RegisterForm = ({ setRoute }: Props) => {
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // console.log(values);
-
+    
     startTransition(() => {
       setError("");
       setSuccess("");

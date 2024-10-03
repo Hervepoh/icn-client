@@ -8,7 +8,8 @@ import qs from "query-string"
 import {
   useRouter,
   usePathname,
-  useSearchParams
+  useSearchParams,
+  redirect
 } from "next/navigation";
 
 import {
@@ -22,14 +23,28 @@ import { Calendar } from '@/components/ui/calendar';
 
 // import { useGetAccounts } from '@/features/accounts/api/use-get-accounts';
 import { useGetSummary } from '@/features/summary/api/use-get-summary';
+import { useUserStore } from '@/features/users/hooks/use-user-store';
 
-import { cn, formatDateRange } from '@/lib/utils';
+import { cn, formatDateRange, hasPermission } from '@/lib/utils';
+import { DATE_KEY } from '@/config/localstorage.config';
+
 
 
 
 type Props = {}
 
 export const DateFilter = (props: Props) => {
+  const { user } = useUserStore();
+
+  let filter = '';
+  if (user && !hasPermission(user, "SUMMARY-READ")) {
+    const type = (user.role.name == 'COMMERCIAL') ? 'assignTo' : 'createdBy';
+    filter = `type=${type}&user=${user.id}`
+  }
+
+  // Récupérez les données avec le filtre
+  const { data, isLoading } = useGetSummary(filter);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -38,13 +53,26 @@ export const DateFilter = (props: Props) => {
   const [from, setFrom] = useState(params.get('from') || '');
   const [to, setTo] = useState(params.get('to') || '');
 
+  const defaultTo = new Date();
+  const defaultFrom = subDays(defaultTo, 30);
+
   // Fonction pour récupérer les filtres du localStorage
   const fetchFiltersFromLocalStorage = () => {
-    const storedFilterQuery = localStorage.getItem('icn-filter-data-query');
+    const storedFilterQuery = localStorage.getItem(DATE_KEY);
     if (storedFilterQuery) {
       const result = JSON.parse(storedFilterQuery);
-      setFrom(result.from ?? "");
-      setTo(result.to ?? "");
+      setFrom(result.from);
+      setTo(result.to);
+    } else {
+      // Si aucune valeur n'est trouvée, utilisez les valeurs par défaut
+      const defaultFromFormatted = format(defaultFrom, "yyyy-MM-dd");
+      const defaultToFormatted = format(defaultTo, "yyyy-MM-dd");
+
+      setFrom(defaultFromFormatted);
+      setTo(defaultToFormatted);
+
+      // Stocker les valeurs par défaut dans localStorage
+      localStorage.setItem('icn-filter-data-query', JSON.stringify({ from: defaultFromFormatted, to: defaultToFormatted }));
     }
   };
 
@@ -56,9 +84,8 @@ export const DateFilter = (props: Props) => {
       setTo(format(defaultDate, "yyyy-MM-dd"));
     }
   }, [from, to]);
-  
-  const defaultTo = new Date();
-  const defaultFrom = subDays(defaultTo, 30);
+
+
 
   const paramState = {
     from: from ? new Date(from) : defaultFrom,
@@ -74,13 +101,17 @@ export const DateFilter = (props: Props) => {
       from: format(dateRange?.from || defaultFrom, "yyyy-MM-dd"),
       to: format(dateRange?.to || defaultTo, "yyyy-MM-dd"),
     }
+    // Mettez à jour les dates dans l'état
+    setFrom(query.from);
+    setTo(query.to);
+
     localStorage.setItem('icn-filter-data-query', JSON.stringify({ from: query.from, to: query.to }));
     const url = qs.stringifyUrl({
       url: pathname,
       query
     }, { skipNull: true, skipEmptyString: true })
-
     router.push(url);
+    window.location.reload();
   }
 
   const onReset = () => {

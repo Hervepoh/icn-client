@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from '@/components/ui/label';
 import * as XLSX from 'xlsx';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
+import Cookies from 'js-cookie';
 
 
 const expectedHeaderSchema = z.array(z.string()).refine(
@@ -94,66 +95,35 @@ export const SearchByFileForm = ({
             if (GoodHeaderFormat.length === headers?.length
                 && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
 
-                console.log("Les en-têtes sont au bon format.");
-
                 const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
-                const invoices = jsonData.map((data) => {
-                       return  [
-                        null,
-                        data.ID,
-                        data.PK_BILL_GENERATED_ID,
-                        "DONGMO SABINE", // TODO fetch by invoice to get customer name
-                        "25/06/2010", // TODO fetch by invoice to get invoice date
-                        data.DUE_AMT
-                    ]     
-                });
-                console.log("invoices",invoices)
-          
-                setInvoices(invoices);
+
                 startTransition(async () => {
                     setIsLoading(true);
-                    setIsPending(true);
-                 
-                 
-                    // jsonData.map(async (data) => {
-                    //     const newData = {
-                    //         reference : data.NUMACI,
-                    //         contract : data.ID,
-                    //         invoice : data.PK_BILL_GENERATED_ID,
-                    //         amount : data.DUE_AMT,
-                    //     }
-                    //     const config: AxiosRequestConfig = {
-                    //         method: 'get',
-                    //         maxBodyLength: Infinity,
-                    //         url: ${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=invoice&value=${newData.invoice}`,
-                    //         headers: {},
-                    //         withCredentials: true, // Set this to true
-                    //         data: ''
-                    //     };
-                   
-                    //     try {
-                    //         const response = await axios.request(config);
-                    //         if (response.data?.bills) {
-                                
-                    //         }
-                    //     } catch (error) {
-                    //         setError("something went wrong");
-                    //         setIsLoading(false);
-                    //         setIsPending(false);
-                    //         if (axios.isAxiosError(error)) {
-                    //             throw error;
-                    //         } else {
-                    //             throw new Error('Une erreur inconnue s\'est produite');
-                    //         }
-                    //     }
-                    // })
                     
-
+                    const invoices = await Promise.all(jsonData.map(async (invoice) => {
+                        const response = await axios.post('/api/search' ,{ enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID , accessToken : Cookies.get('access_token')});
+                        const goodData = response.data.bills ?? [];
+                        const result = [
+                            goodData.length >0  ? goodData[0][0] : "",
+                            invoice.ID,
+                            invoice.PK_BILL_GENERATED_ID,
+                            goodData.length > 0 ? goodData[0][3] : "",
+                            goodData.length > 0 ? goodData[0][4] : "",
+                            goodData.length > 0 ? goodData[0][5] : 0,
+                            invoice.DUE_AMT,
+                            goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : ""): "Invoice not exist"
+                        ]
+                       
+                        return result;   
+                    })); 
+     
+                    setInvoices(invoices);                 
+                  
                     setIsLoading(false);
                     setIsPending(false);
                  });
             } else {
-                console.log("Les en-têtes ne sont pas au bon format.");
+                toast.error("Headers are in a wrong format , please use the template")
             }
 
             reset();

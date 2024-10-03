@@ -30,7 +30,7 @@ export const getAccountLinkStatus = async () => {
     //   return false;
     // }
   } catch (error) {
-    console.error("Failed to check if user has Google account linked:", error);
+    // console.error("Failed to check if user has Google account linked:", error);
   }
 
   return true;

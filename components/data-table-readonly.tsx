@@ -53,7 +53,13 @@ export function DataTableReadOnly<TData, TValue>({
 
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+        validatedBy: false, 
+        validatedAt: false, 
+        modifiedBy: false, 
+        updatedAt: false, 
+        createdBy: true, 
+    })
     const [rowSelection, setRowSelection] = React.useState({})
 
 
@@ -106,7 +112,7 @@ export function DataTableReadOnly<TData, TValue>({
         });
     };
 
-    
+
     const exportCSV = (data: any) => {
         let fileName = 'transactions';
         let EXPORT_EXTENSION = '.csv';
@@ -120,7 +126,7 @@ export function DataTableReadOnly<TData, TValue>({
         // Create a link element to trigger download
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download',  fileName + '_export_' + new Date().getTime() + EXPORT_EXTENSION);
+        link.setAttribute('download', fileName + '_export_' + new Date().getTime() + EXPORT_EXTENSION);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -129,8 +135,8 @@ export function DataTableReadOnly<TData, TValue>({
 
 
     const exportExcel = (data: any[]) => {
-        const exportData = data.map((item)=> {
-            const {__v , ...rest} = item.original 
+        const exportData = data.map((item) => {
+            const { __v, ...rest } = item.original
             return rest;
         });
         import('xlsx').then((xlsx) => {
