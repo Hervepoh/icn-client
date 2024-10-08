@@ -35,7 +35,7 @@ export function formatPercentage(
 ) {
   const formatted = new Intl.NumberFormat("en-US", {
     style: "percent",
-  }).format(value/100)
+  }).format(value / 100)
 
 
   if (options.addPrefix && value > 0) {
@@ -87,14 +87,21 @@ export function fillMissingDays(activeDays: {
 }
 
 
-const formatDate = (date: string | number | Date)=>{
+// Function to check if the date is in the format DD/MM/YYYY
+export const isValidDate = (dateString: string): boolean => {
+  const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(20\d{2})$/; // Match DD/MM/YYYY
+  return regex.test(dateString);
+};
+
+
+export const formatDate = (date: string | number | Date) => {
   date = new Date(date);
   const month = date.getMonth() + 1; // Add 1 because month values are zero-based
   const day = date.getDate();
   const year = date.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
 
- return(formattedDate);
+  return (formattedDate);
 }
 
 
@@ -111,15 +118,15 @@ export function formatDateRange(period: Period) {
   const defaultFrom = subDays(defaultTo, 30);
 
   if (!period?.from) {
-    if (isSameYear(defaultFrom, defaultTo)){
+    if (isSameYear(defaultFrom, defaultTo)) {
       return `${format(defaultFrom, DATEFORMAT)} - ${format(defaultTo, DATEFORMATYEAR)}`
     }
-     
-    return `${format(defaultFrom, DATEFORMATYEAR)} - ${format(defaultTo, DATEFORMATYEAR)}`  
+
+    return `${format(defaultFrom, DATEFORMATYEAR)} - ${format(defaultTo, DATEFORMATYEAR)}`
   }
 
   if (period.to) {
-    if (isSameYear(new Date(period.from), new Date(period.to))){
+    if (isSameYear(new Date(period.from), new Date(period.to))) {
       return `${format(period.from, DATEFORMAT)} - ${format(period.to, DATEFORMATYEAR)}`
     }
     return `${format(period.from, DATEFORMATYEAR)} - ${format(period.to, DATEFORMATYEAR)}`
@@ -164,7 +171,22 @@ interface User {
 //   );
 // }
 export function hasPermission(user: User, ...permissionNames: string[]): boolean {
-  return user.role?.RolePermission.some(rolePermission => 
-      permissionNames.includes(rolePermission.permission.name)
+  return user.role?.RolePermission.some(rolePermission =>
+    permissionNames.includes(rolePermission.permission.name)
   ) ?? false;
 }
+
+
+// Define a type for the entity
+interface Entity {
+  id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Function to get bank ID by bank name  Or get Payement Mode ID by payment Mode name 
+export const getEntityIdByName = (entity_name: string, entity_List: Entity[]): string => {
+  const entity = entity_List.find(e => e.name === entity_name);
+  return entity ? entity.id : "";
+};

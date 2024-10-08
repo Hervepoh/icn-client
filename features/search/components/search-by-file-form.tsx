@@ -58,6 +58,7 @@ type Props = {
     setError: (value: string) => void;
     setIsPending: (value: boolean) => void;
     setViewRecap: (value: boolean) => void;
+    reference: string
 }
 
 export const SearchByFileForm = ({
@@ -65,12 +66,24 @@ export const SearchByFileForm = ({
     placeholder,
     setIsFirstView,
     setInvoices,
-    setError, setIsPending, setViewRecap }: Props) => {
+    setError, setIsPending, setViewRecap,
+    reference,
+}: Props) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
     const { register, handleSubmit, reset } = useForm();
     const [excelData, setExcelData] = useState<ExcelData[]>([]);
+
+    const validateNumaci = (bills: any[], expectedNumaci: string) => {
+        const errors: string[] = [];
+        bills.forEach((bill, index) => {
+            if (bill.NUMACI != expectedNumaci) {
+                errors.push(`Error: Bill at index ${index} has an invalid NUMACI: ${bill.NUMACI}. Expected: ${expectedNumaci}.`);
+            }
+        });
+        return errors;
+    };
 
     const onSubmit = (data: any) => {
         setIsFirstView(false);
@@ -97,31 +110,44 @@ export const SearchByFileForm = ({
 
                 const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
 
-                startTransition(async () => {
-                    setIsLoading(true);
-                    
-                    const invoices = await Promise.all(jsonData.map(async (invoice) => {
-                        const response = await axios.post('/api/search' ,{ enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID , accessToken : Cookies.get('access_token')});
-                        const goodData = response.data.bills ?? [];
-                        const result = [
-                            goodData.length >0  ? goodData[0][0] : "",
-                            invoice.ID,
-                            invoice.PK_BILL_GENERATED_ID,
-                            goodData.length > 0 ? goodData[0][3] : "",
-                            goodData.length > 0 ? goodData[0][4] : "",
-                            goodData.length > 0 ? goodData[0][5] : 0,
-                            invoice.DUE_AMT,
-                            goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : ""): "Invoice not exist"
-                        ]
-                       
-                        return result;   
-                    })); 
-     
-                    setInvoices(invoices);                 
-                  
-                    setIsLoading(false);
-                    setIsPending(false);
-                 });
+                // Validation
+                const validationErrors = validateNumaci(jsonData, reference);
+
+               // Displaying Errors
+                if (validationErrors.length > 0) {
+                    validationErrors.forEach(error => {
+                        toast.error(error); 
+                    });
+                   
+                } else {
+                    startTransition(async () => {
+                        setIsLoading(true);
+    
+                        const invoices = await Promise.all(jsonData.map(async (invoice) => {
+                            const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
+                            const goodData = response.data.bills ?? [];
+                            const result = [
+                                goodData.length > 0 ? goodData[0][0] : "",
+                                invoice.ID,
+                                invoice.PK_BILL_GENERATED_ID,
+                                goodData.length > 0 ? goodData[0][3] : "",
+                                goodData.length > 0 ? goodData[0][4] : "",
+                                goodData.length > 0 ? goodData[0][5] : 0,
+                                invoice.DUE_AMT,
+                                goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : "") : "Invoice not exist"
+                            ]
+    
+                            return result;
+                        }));
+    
+                        setInvoices(invoices);
+    
+                        setIsLoading(false);
+                        setIsPending(false);
+                    });
+                }
+
+        
             } else {
                 toast.error("Headers are in a wrong format , please use the template")
             }
@@ -130,8 +156,10 @@ export const SearchByFileForm = ({
         };
         reader.readAsBinaryString(file);
 
-        
+
     }
+
+
 
     const disabled = isLoading;
     return (

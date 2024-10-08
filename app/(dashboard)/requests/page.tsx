@@ -56,7 +56,7 @@ export default function TransactionsPage(props: Props) {
     const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS)
 
     // Import Select Account to continue importing
-    const [BankDialog, confirm] = useSelectBank();
+    // const [BankDialog, confirm] = useSelectBank();
 
     const onUpload = (results: typeof INITIAL_IMPORT_RESULTS) => {
         setImportResults(results);
@@ -71,15 +71,15 @@ export default function TransactionsPage(props: Props) {
         values: any[]
     ) => {
 
-        const bankId = await confirm();
+        // const bankId = await confirm();
 
-        if (!bankId) {
-            return toast.error("Please select a bank to continue.");
-        }
+        // if (!bankId) {
+        //     return toast.error("Please select a bank to continue.");
+        // }
 
         const data = values.map((value: any) => ({
             ...value,
-            bank: bankId as string,
+            // bank: bankId as string,
         }))
 
         createTransactionsQuery.mutate(data, {
@@ -113,7 +113,7 @@ export default function TransactionsPage(props: Props) {
     if (variant === VARIANTS.IMPORT) {
         return (
             <>
-                <BankDialog />
+                {/* <BankDialog /> */}
                 <ImportCard
                     data={importResults.data}
                     onCancel={onCancelImport}

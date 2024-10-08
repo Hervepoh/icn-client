@@ -128,7 +128,7 @@ export default function TransactionsDetails() {
         setfinalData(newData.filter(r => r.id != id));
         DeleteDetailTransactionsQuery.mutate(id, {
             onSuccess: () => {
-                console.log("success handleDelete")
+                toast.success("success handleDelete")
             },
         });
     }
@@ -327,7 +327,8 @@ export default function TransactionsDetails() {
                                 />
                             }
                             {
-                                view === "upload"
+                                view === "upload" 
+                                && data
                                 &&
                                 <SearchByFileForm
                                     key="file"
@@ -338,6 +339,7 @@ export default function TransactionsDetails() {
                                     setError={setSearchError}
                                     setIsPending={setSearchIsLoading}
                                     setViewRecap={setViewRecap}
+                                    reference={data.reference}
                                 />
                             }
 
@@ -416,7 +418,7 @@ export default function TransactionsDetails() {
 
                                         <div className="flex flex-col h-full items-start justify-center p-6">
                                             <Table>
-                                                <TableCaption>A list of your recent invoices.</TableCaption>
+                                                <TableCaption>A list of your invoices.</TableCaption>
                                                 <TableHeader className="bg-gray-200 text-white">
                                                     <TableRow>
                                                         <TableHead></TableHead>

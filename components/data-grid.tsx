@@ -26,6 +26,7 @@ export const DataGrid= ({data,isLoading} : DataType) => {
     )
   }
 
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pb-2 mb-8">
       <DataCard
@@ -57,7 +58,7 @@ export const DataGrid= ({data,isLoading} : DataType) => {
 
       <DataCard
         title={statuses[6].label}
-        value={data?.transactions?.nber[statuses[6].label] || 0}
+        value={data?.transactions?.nber[statuses[6].value] || 0}
         percentageChange={data?.incomeChange}
         icon={FaArrowTrendUp}
         variant="success"

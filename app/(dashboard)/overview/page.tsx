@@ -19,7 +19,6 @@ type Props = {}
 export default function TransactionsPage(props: Props) {
 
     const getTransactionsQuery = useGetRequests(); //useGetRequests("?status=validated");
-    const transactions = getTransactionsQuery.data || [];
 
     const isDisabled = getTransactionsQuery.isLoading
 
@@ -38,6 +37,9 @@ export default function TransactionsPage(props: Props) {
         )
     }
 
+    const transactions = getTransactionsQuery.data || [];
+    const transactionsfiltered = transactions.filter((item: any) => item.status !== "draft" && !item.deleted);
+
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
             <Card className='border-none drop-shadow-sm'>
@@ -47,7 +49,7 @@ export default function TransactionsPage(props: Props) {
                 <CardContent>
                     <DataTableReadOnly
                         columns={columns}
-                        data={transactions}
+                        data={transactionsfiltered}
                         filterKey='reference'
                         disabled={isDisabled}
                     />

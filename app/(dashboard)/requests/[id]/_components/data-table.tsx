@@ -57,6 +57,10 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
+    const [pagination, setPagination] = React.useState({
+        pageIndex: 0, //initial page index
+        pageSize: 100, //default page size
+      });
 
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
@@ -67,6 +71,7 @@ export function DataTable<TData, TValue>({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        onPaginationChange: setPagination,
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
@@ -75,6 +80,7 @@ export function DataTable<TData, TValue>({
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
         state: {
+            pagination,
             sorting,
             columnFilters,
             columnVisibility,
