@@ -4,7 +4,7 @@ import { ArrowUpDown, ClipboardCheck, TriangleAlert } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -75,9 +75,9 @@ export const columns: ColumnDef<ResponseType>[] = [
         <div className='flex w-[100px] items-center'>
           <Badge
             variant={statusStyles[rowStatus] || "primary"}
-            className="px-3.5 py-2.5">
+            className="px-3.5 py-2.5 text-center">
             {status.icon && (
-              <status.icon className='mr-2 h-4 w-4 text-muted-foreground text-white' />
+              <status.icon className={cn("mr-2 h-4 w-4 text-muted-foreground", status.iconColor)} />
             )}
             <span>{status.label}</span>
           </Badge>

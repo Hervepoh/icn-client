@@ -1,5 +1,6 @@
 import { CheckCircledIcon, CircleIcon, CrossCircledIcon, QuestionMarkCircledIcon, StopwatchIcon } from "@radix-ui/react-icons";
-import { NewspaperIcon, SandwichIcon, Trash2Icon } from "lucide-react";
+import { NewspaperIcon, SandwichIcon, SquarePenIcon, Trash2Icon } from "lucide-react";
+import { LuBookOpenCheck } from "react-icons/lu";
 
 export const status = [
     'deleted',
@@ -17,13 +18,13 @@ export const statuses = [
     {
         value: 'deleted',
         label: 'Deleted',
-        icon: SandwichIcon,
+        icon: Trash2Icon,
         iconColor: 'text-white',
     },
     {
         value: 'draft',
         label: 'Draft',
-        icon: Trash2Icon,
+        icon: SquarePenIcon ,
         iconColor: 'text-white',
     },
     {
@@ -46,9 +47,9 @@ export const statuses = [
     },
     {
         value: 'pending_commercial_input',
-        label: 'Waiting Commercial input',
-        icon: StopwatchIcon,
-        iconColor: 'text-white',
+        label: 'Commercial',
+        icon: SquarePenIcon,
+        iconColor: 'text-black',
     },
     {
         value: 'processing',
@@ -59,8 +60,8 @@ export const statuses = [
     {
         value: 'treated',
         label: 'Treated',
-        icon: CheckCircledIcon,
-        iconColor: 'text-white',
+        icon: LuBookOpenCheck  ,
+        iconColor: 'text-black',
     },
 
 ]

@@ -13,14 +13,14 @@ type DataType = {
   isLoading: boolean;
 }
 
-export const DataGrid= ({data,isLoading} : DataType) => {
+export const DataGrid = ({ data, isLoading }: DataType) => {
 
- 
+
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pb-2 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 pb-2 mb-8">
         {
-          [1, 2, 3 , 4].map((i) => <DataCardLoading key={i} />)
+          [1, 2, 3, 4, 5].map((i) => <DataCardLoading key={i} />)
         }
       </div >
     )
@@ -28,7 +28,7 @@ export const DataGrid= ({data,isLoading} : DataType) => {
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pb-2 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 pb-2 mb-8">
       <DataCard
         title={statuses[2].label}
         value={data?.transactions?.nber[statuses[2].value] || 0}
@@ -65,9 +65,16 @@ export const DataGrid= ({data,isLoading} : DataType) => {
         dateRange={data?.dateRangeLabel}
       />
 
+      <DataCard
+        title={statuses[7].label}
+        value={data?.transactions?.nber[statuses[7].value] || 0}
+        percentageChange={data?.incomeChange}
+        icon={FaArrowTrendUp}
+        variant="success"
+        dateRange={data?.dateRangeLabel}
+      />
 
     </div>
   )
 }
 
- 

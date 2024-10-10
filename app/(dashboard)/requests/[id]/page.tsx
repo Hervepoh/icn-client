@@ -6,7 +6,7 @@ import { BiPlusCircle, BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 import {
     Card,
@@ -46,6 +46,7 @@ import { InfoCard } from "@/components/info-card";
 
 import { DataTable } from './_components/data-table';
 import { columns } from "./_components/columns";
+import { LoadingComponent } from "./_components/Loading";
 
 import { useGetRequest } from "@/features/requests/api/use-get-request";
 import { useGetRequestDetails } from "@/features/requests/api/use-get-request-details";
@@ -59,6 +60,9 @@ import { SearchByCodeCliForm } from "@/features/search/components/search-by-code
 import { SearchByFileForm } from "@/features/search/components/search-by-file-form";
 import { useEditRequest } from '@/features/requests/api/use-edit-request';
 import { status } from "@/config/status.config";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+
 
 
 interface Invoice {
@@ -128,9 +132,10 @@ export default function TransactionsDetails() {
         setfinalData(newData.filter(r => r.id != id));
         DeleteDetailTransactionsQuery.mutate(id, {
             onSuccess: () => {
-                toast.success("success handleDelete")
+                toast.success("Successfully deleted")
             },
         });
+        setDisableSubmit(true);
     }
 
     const handleInputChange = (index: number, newValue: number) => {
@@ -140,6 +145,7 @@ export default function TransactionsDetails() {
             newData[index].amountTopaid = newValue;
             setfinalData(newData);
             recalculateSelectedInvoices(newData);
+            setDisableSubmit(true);
         }
     }
 
@@ -148,6 +154,7 @@ export default function TransactionsDetails() {
         newData[index].selected = !newData[index].selected;
         setfinalData(newData);
         recalculateSelectedInvoices(newData);
+        setDisableSubmit(true);
     };
 
     const handleSaveChange = () => {
@@ -161,8 +168,8 @@ export default function TransactionsDetails() {
             }));
             SaveDeltailsTransactionsQuery.mutate(updates);
         }
-
     };
+
     //My part
     const handleDisable = () => {
         const isOkay = !(totalToPaid === parseFloat(data?.amount) && !finalData.some(row => row.isDuplicate))
@@ -173,22 +180,22 @@ export default function TransactionsDetails() {
     }
 
     const handleSubmit = async () => {
-        handleSaveChange()
-        //EndPoint for status change of the request
-        const update = {
-            status: "processing"
+        if (qualityControl()) {
+            handleSaveChange()
+            //EndPoint for status change of the request
+            const update = {
+                status: "processing"
+            }
+            EditTransactionsQuery.mutate({ status: status[7] }, {
+                onSuccess: () => {
+                    toast.success('Task Completed')
+                    router.push('/requests');
+                },
+            });
         }
-        EditTransactionsQuery.mutate({ status: status[7] }, {
-            onSuccess: () => {
-                toast.success('Task Completed')
-                router.push('/requests');
-            },
-        });
-
     }
 
-
-    const handleQualityControl = () => {
+    const qualityControl = () => {
         // Build finalData and give every element an attribut isDuplicate
         const newData = finalData.map(row => {
             const key = `${row.contract}-${row.invoice}`;
@@ -201,6 +208,17 @@ export default function TransactionsDetails() {
 
 
         if (data?.amount == newTotalToPaid && !selectedRows.some((row) => row.isDuplicate)) {
+            setDisableSubmit(false);
+            return true
+        } else {
+            return false
+        }
+    };
+
+
+    const handleQualityControl = () => {
+        // handleQualityControl control
+        if (qualityControl()) {
             toast.success("Very thing look's good");
             setDisableSubmit(false);
         } else {
@@ -327,7 +345,7 @@ export default function TransactionsDetails() {
                                 />
                             }
                             {
-                                view === "upload" 
+                                view === "upload"
                                 && data
                                 &&
                                 <SearchByFileForm
@@ -356,11 +374,13 @@ export default function TransactionsDetails() {
                             {
                                 isLoading ?
                                     (<Skeleton className="w-[500px] h-[20px] rounded-full" />) :
-                                    (<CardDescription className="lg:line-clamp-1 lg:flex gap-3">
-                                        <div>Customer : <span className="font-bold text-md">{data?.name ?? ""}</span></div>
-                                        <div>Amount  :  xfa  <span className="font-bold text-md">{data?.amount}</span></div>
-                                        <div>Date  :   <span className="font-bold text-md">{format(new Date(data?.paymentDate), 'dd/MM/yyyy')}</span></div>
-                                        <div>Bank :  <span className="font-bold">{data?.bank.name}</span></div>
+                                    (<CardDescription>
+                                        <div className="lg:line-clamp-1 lg:flex gap-3">
+                                            <div>Customer : <span className="font-bold text-md">{data?.name ?? ""}</span></div>
+                                            <div>Amount  :  xfa  <span className="font-bold text-md">{data?.amount}</span></div>
+                                            <div>Date  :   <span className="font-bold text-md">{format(new Date(data?.paymentDate), 'dd/MM/yyyy')}</span></div>
+                                            <div>Bank :  <span className="font-bold">{data?.bank.name}</span></div>
+                                        </div>
                                     </CardDescription>)
                             }
 
@@ -381,14 +401,27 @@ export default function TransactionsDetails() {
                                 :
                                 viewRecap ?
                                     <>
+                                        <div className="mt-5">
+                                            <div className="flex justify-between">
+                                                <div>Number of invoices :  <span className="font-bold text-md">{` `}{finalData.length.toString().padStart(2, '0')}</span></div>
+                                                <div className="flex gap-3">
+                                                    Active : <span className="font-bold text-md">{finalData.filter((row) => row.selected).length.toString().padStart(2, '0')}</span>
+                                                    Inactive : <span className="font-bold text-md">{finalData.filter((row) => !row.selected).length.toString().padStart(2, '0')}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <div>Amount Invoice : <span className="font-bold text-md">{formatCurrency(totalToPaid)}</span></div>
+                                                {/* <div>{totalToPaid} <span className="font-bold text-xl">{totalToPaid !== parseFloat(data?.amount) ? "<>" : "=="}  {data?.amount}</span></div> */}
+                                                <div>Amount ACI : <span className="font-bold text-md">{formatCurrency(data?.amount)}</span></div>
+                                            </div>
+                                        </div>
                                         <div className="lg:flex text-center h-full items-center justify-between p-3">
                                             <div className="hidden lg:flex gap-2 items-center">
                                                 <ShoppingBag className="mr-4" />
                                             </div>
 
                                             <div className="my-2">
-                                                <span className="font-semibold text-xl">Panier : {` `}
-                                                    {totalToPaid} {totalToPaid !== parseFloat(data?.amount) ? "<>" : "=="}  {data?.amount}</span>
+                                            {parseFloat(data?.amount) - totalToPaid != 0 && <Badge variant={parseFloat(data?.amount) - totalToPaid > 0 ? 'primary': 'destructive'} className="text-xl">{formatCurrency(parseFloat(data?.amount) - totalToPaid)} </Badge>}
                                             </div>
                                             {data.statusId == 6 &&
                                                 <div className="flex gap-2 flex-col-reverse">
@@ -579,41 +612,4 @@ export default function TransactionsDetails() {
 }
 
 
-const LoadingComponent = () => {
-    return (
-        <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-            <div className="grid grid-cols-1 lg:grid-cols-4 md:gap-8 pb-2 mb-8">
-                <Card className='border-none drop-shadow-sm '>
-                    <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
-
-                        <div>
-                            <Skeleton className="w-32 h-6 mb-2" />
-                            <Skeleton className="w-40 h-5" />
-                        </div>
-                        <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
-                            <Skeleton className="w-10 h-10" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-
-                    </CardContent>
-                </Card>
-                <Card className='border-none drop-shadow-sm col-span-3'>
-                    <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
-                        <div className='space-y-2'>
-                            <Skeleton className="w-[500px] h-[20px] rounded-full" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <Skeleton className="w-[500px] h-[20px] rounded-full" />
-
-                        <div className="flex h-full items-start justify-center p-6">
-                            <Skeleton className="w-full h-[500px]" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    )
-}
 
