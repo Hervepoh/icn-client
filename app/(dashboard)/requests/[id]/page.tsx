@@ -60,7 +60,6 @@ import { SearchByCodeCliForm } from "@/features/search/components/search-by-code
 import { SearchByFileForm } from "@/features/search/components/search-by-file-form";
 import { useEditRequest } from '@/features/requests/api/use-edit-request';
 import { status } from "@/config/status.config";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
 
@@ -81,6 +80,8 @@ export default function TransactionsDetails() {
         isLoading: request_isLoading,
         data,
     } = useGetRequest(params.id)
+
+    console.log("data", data);
 
     const {
         isLoading: details_isLoading,
@@ -258,35 +259,59 @@ export default function TransactionsDetails() {
             <div className="grid grid-cols-1 lg:grid-cols-5 md:gap-8 pb-2 mb-8">
                 <Card className='border-none drop-shadow-sm '>
                     <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
-                        <div>
-                            <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
-                            <CardDescription>Unpaid bill</CardDescription>
-                        </div>
-                        <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
-                            {view === "upload" ?
-                                <BiPlusCircle size={48} className="sm:w-15" onClick={() => setView("search")} />
-                                : <BiSearch size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
-                        </div>
+                        <button
+                            className='w-full flex justify-between items-start'
+                            onClick={() => view === "upload" ? setView("search") : (setView("upload"), setViewRecap(true))}
+                        >
+                            <div>
+                                <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
+                                <CardDescription>Unpaid bill</CardDescription>
+                            </div>
+                            <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+                                {view === "upload" ?
+                                    <BiSearch size={48} className="sm:w-15" onClick={() => setView("search")} />
+                                    : <BiPlusCircle size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
+                            </div>
+                        </button>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             {
                                 !isLoading &&
-                                view === "search" &&
-                                <div ref={selectRef} className={cn("space-y-2", "mb-5")}>
-                                    <Label>Criteria</Label>
-                                    <Select value={selectedOption} onValueChange={handleOptionChange}>
-                                        <SelectTrigger className="" >
-                                            <SelectValue placeholder="Select a criteria" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="regroup">Regroupment code</SelectItem>
-                                            <SelectItem value="customer">Customer</SelectItem>
-                                            <SelectItem value="contract">Contract number</SelectItem>
-                                            <SelectItem value="invoice">Bill number</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>}
+                                view === "search" && (
+                                    <div className="flex flex-col gap-y-2">
+                                        <SearchByFileForm
+                                            key="file"
+                                            label="Template file"
+                                            placeholder="value"
+                                            setInvoices={setInvoices}
+                                            setIsFirstView={setIsFirstView}
+                                            setError={setSearchError}
+                                            setIsPending={setSearchIsLoading}
+                                            setViewRecap={setViewRecap}
+                                            reference={data.reference}
+                                        />
+
+
+                                        <div ref={selectRef} className={cn("space-y-2", "my-5")}>
+                                            <Label>Criteria</Label>
+                                            <Select value={selectedOption} onValueChange={handleOptionChange}>
+                                                <SelectTrigger className="" >
+                                                    <SelectValue placeholder="Select a criteria" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="regroup">Regroupment code</SelectItem>
+                                                    <SelectItem value="customer">Customer</SelectItem>
+                                                    <SelectItem value="contract">Contract number</SelectItem>
+                                                    <SelectItem value="invoice">Bill number</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                    </div>
+                                )
+
+                            }
 
                             {
                                 view === "search" &&
@@ -420,10 +445,12 @@ export default function TransactionsDetails() {
                                                 <ShoppingBag className="mr-4" />
                                             </div>
 
-                                            <div className="my-2">
-                                            {parseFloat(data?.amount) - totalToPaid != 0 && <Badge variant={parseFloat(data?.amount) - totalToPaid > 0 ? 'primary': 'destructive'} className="text-xl">{formatCurrency(parseFloat(data?.amount) - totalToPaid)} </Badge>}
+                                            <div className="my-2 gap-y-2 flex flex-col items-center">
+                                                Difference between ACI and amount collected
+                                                {<Badge variant={parseFloat(data?.amount) - totalToPaid !== 0 ? 'destructive' : 'success'} className="text-xl">{formatCurrency(parseFloat(data?.amount) - totalToPaid)} </Badge>}
+
                                             </div>
-                                            {data.statusId == 6 &&
+                                            {data?.statusId == 6 &&
                                                 <div className="flex gap-2 flex-col-reverse">
                                                     <Button
                                                         onClick={() => handleQualityControl()}
@@ -444,7 +471,7 @@ export default function TransactionsDetails() {
                                                     </Button>
                                                 </div>
                                             }
-                                            {data.statusId != 6 && <div />}
+                                            {data?.statusId != 6 && <div />}
 
 
                                         </div>
@@ -478,7 +505,7 @@ export default function TransactionsDetails() {
                                                                 <Input
                                                                     type="checkbox"
                                                                     checked={row.selected}
-                                                                    disabled={data.statusId != 6}
+                                                                    disabled={data?.statusId != 6}
                                                                     onChange={() => handleCheckboxChange(i)}
                                                                 />
                                                             </TableCell>
@@ -500,14 +527,14 @@ export default function TransactionsDetails() {
                                                                     value={row.amountTopaid}
                                                                     onChange={e => handleInputChange(i, parseFloat(e.target.value))}
                                                                     min={0}
-                                                                    disabled={data.statusId != 6}
+                                                                    disabled={data?.statusId != 6}
                                                                     className="w-[130px]"
                                                                     style={{ color: row.isDuplicate ? 'red' : 'inherit' }}
                                                                 />
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="flex items-center justify-center gap-x-1">
-                                                                    {data.statusId == 6 && <Button
+                                                                    {data?.statusId == 6 && <Button
                                                                         disabled={disable}
                                                                         onClick={() => handleDelete(row.id)}
                                                                         size="sm"
@@ -533,7 +560,7 @@ export default function TransactionsDetails() {
                                                 </TableFooter>
                                             </Table>
 
-                                            {data.statusId == 6 &&
+                                            {data?.statusId == 6 &&
                                                 <Button
                                                     disabled={disable || finalData.length == 0}
                                                     onClick={() => handleSaveChange()}

@@ -18,6 +18,10 @@ export const language = {
         en: "Listing ICN",
         fr: "Listing des ACI",
     },
+    customers_reference:{
+        en: "Customers Reference",
+        fr: "Referentiel client",
+    },
     aci_unpaid:{
         en: "ICN Unpaid",
         fr: "Impayés ACI",

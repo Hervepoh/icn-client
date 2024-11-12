@@ -21,6 +21,10 @@ export const navbarRoutes: {href:string,label:string}[] = [
         href: "/overview",
         label: language.aci_management["en"]
     },
+    {
+        href: "/customers-reference",
+        label: language.customers_reference["en"]
+    },
     // {
     //     href: "#",
     //     label: language.aci_journal["fr"],

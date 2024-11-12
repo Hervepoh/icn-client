@@ -166,8 +166,9 @@ export const SearchByFileForm = ({
         <div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='mb-4'>
-                    <Label>Upload dans le panier</Label>
+                    <Label>Upload a file</Label>
                     <Input
+                    className='mt-2'
                         type="file"
                         accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
                         {...register('file', { required: true })}
@@ -179,7 +180,7 @@ export const SearchByFileForm = ({
                     className="w-full mt-4"
                     disabled={disabled}
                 >
-                    {disabled ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Add to ACI shopping list"}
+                    {disabled ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Add to ACI invoices list"}
                 </Button>
             </form>
 

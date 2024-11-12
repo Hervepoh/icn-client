@@ -201,7 +201,7 @@ export const RequestForm = (
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Proof of payment</FormLabel>
+                            <FormLabel>Comment</FormLabel>
                             <FormControl>
                                 <Textarea
                                     {...field}
