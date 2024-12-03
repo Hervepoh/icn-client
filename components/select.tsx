@@ -29,6 +29,7 @@ export const Select = ({
     }
 
     const formattedValue = useMemo(() => {
+        if (value === '') return null; // Retourne null si value est vide
         return options.find((option) => option.value === value)
     }, [options, value])
 

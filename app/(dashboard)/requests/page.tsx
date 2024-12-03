@@ -4,13 +4,22 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Plus, Upload } from 'lucide-react';
 
+import { hasPermission } from '@/lib/utils';
+
 import { useUserStore } from '@/features/users/hooks/use-user-store';
 import { useSelectBank } from '@/features/banks/hooks/use-select-bank';
+import { useGetUnits } from '@/features/unit/api/use-get-units';
 import { useNewRequest } from '@/features/requests/hooks/use-new-request';
 import { useGetRequests } from '@/features/requests/api/use-get-requests';
 import { useBulkCreateRequests } from '@/features/requests/api/use-bulk-create-requests';;
 // import { useBulkDeleteTransactions } from '@/features/transactions/api/use-bulk-delete-transactions';
 
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger
+} from "@/components/ui/tabs";
 import {
     Card,
     CardContent,
@@ -21,10 +30,12 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from '@/components/data-table';
 
-import { columns } from './columns';
-import { ImportCard } from './import-card';
 import { UploadButton } from './upload-button';
-import { hasPermission } from '@/lib/utils';
+import { ImportCard } from './import-card';
+import { columns } from './columns';
+import { columnsInit } from './columns-init';
+import { columnsRegion } from './columns-region';
+import { Lock } from './lock';
 
 
 enum VARIANTS {
@@ -49,7 +60,26 @@ export default function TransactionsPage(props: Props) {
     // const deleteTransactionsQuery = useBulkDeleteTransactions();
 
     let transactions = getTransactionsQuery.data || [];
-    const isDisabled = getTransactionsQuery.isLoading // || deleteTransactionsQuery.isPending
+
+    const transactions_all = transactions;
+    let transactions_per_region: any[] = [];
+    let transactions_per_unit: any[] = [];
+
+    const unitsQuery = useGetUnits();
+    const units = unitsQuery.data || [];
+
+    let region_id = "";
+    let region_name = "";
+    let unit_name = "";
+    // TODO AMELERER POUR RECUPERER DANS USER DIRECTEMENT
+    if (user?.unitId) {
+        const unit = units.find((unit: { id: string; name: string; region: string, regionId: string }) => unit.id === user.unitId)
+        unit_name = unit?.name;
+        region_id = unit?.regionId;
+        region_name = unit?.region;
+    }
+
+    const isDisabled = getTransactionsQuery.isLoading || unitsQuery.isLoading // || deleteTransactionsQuery.isPending
 
     // Import features
     const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
@@ -59,7 +89,9 @@ export default function TransactionsPage(props: Props) {
     // const [BankDialog, confirm] = useSelectBank();
 
     const onUpload = (results: typeof INITIAL_IMPORT_RESULTS) => {
-        setImportResults(results);
+        const data = results.data.filter((item:any) => !(item.length === 1 && item[0] === '')); // Remove remove empty line in the csv file
+        const cleanResult = {...results,data:data}; 
+        setImportResults(cleanResult);
         setVariant(VARIANTS.IMPORT);
     };
     const onCancelImport = () => {
@@ -95,7 +127,7 @@ export default function TransactionsPage(props: Props) {
 
 
 
-    if (!user || getTransactionsQuery.isLoading) {
+    if (!user || getTransactionsQuery.isLoading || unitsQuery.isLoading) {
         return (
             <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
                 <Card className='border-none drop-shadow-sm'>
@@ -124,19 +156,33 @@ export default function TransactionsPage(props: Props) {
     }
 
     if (!hasPermission(user, "TRANSACTION-VALIDATE", "TRANSACTION-ASSIGN")) {
-        transactions = transactions.filter((transaction: any) => transaction.userId === user.id)
+        transactions = transactions.filter((transaction: any) => transaction.userId === user.id);
+
+        // list of transaction  of the connected user region with the action 
+        const transactions_per_region_temp = transactions_all.filter((transaction: any) => transaction.regionId === region_id);
+        transactions_per_region = transactions_per_region_temp.map((transaction: any) => {
+            return {
+                ...transaction,
+                isUserAuthorizedForAction: (user.unitId === transaction.unitId || transaction.unitId === null)
+            };
+        });
+
+        // list of transaction of the connected user unit 
+        transactions_per_unit = transactions_all.filter((transaction: any) => transaction.unitId === user?.unitId)
     }
     if (hasPermission(user, "TRANSACTION-VALIDATE")) {
         transactions = transactions.filter((transaction: any) => transaction.statusId == 3)
     }
     if (hasPermission(user, "TRANSACTION-ASSIGN")) {
-        transactions = transactions.filter((transaction: any) => ( (transaction.statusId == 4) && (transaction.userId === transaction.createdById)))
+        transactions = transactions.filter((transaction: any) => ((transaction.statusId == 4) && (transaction.userId === transaction.createdById)))
     }
 
 
     return (
+        <>
+        <Lock />
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-            <Card className='border-none drop-shadow-sm'> 
+            <Card className='border-none drop-shadow-sm'>
                 <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
                     <CardTitle className='text-xl line-clamp-1'>MY TRANSACTIONS</CardTitle>
 
@@ -163,21 +209,82 @@ export default function TransactionsPage(props: Props) {
 
                 </CardHeader>
                 <CardContent>
-                    <DataTable
-                        columns={columns}
-                        data={transactions}
-                        filterKey='reference'
-                        deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
-                        onDelete={(row) => {
-                            ""
-                            // const ids = row.map((r) => r.original.id);
-                            // deleteTransactionsQuery.mutate({ ids });
-                        }}
-                        disabled={isDisabled}
-                    />
+                    {user?.role?.name === "COMMERCIAL" && (
+                        <Tabs defaultValue="me">
+                            <TabsList className='bg-primary'>
+                                <TabsTrigger value="me">{` `} USER : {` `} {`ME`}</TabsTrigger>
+                                <TabsTrigger value="region">{` `} REGION : {` `} {region_name}</TabsTrigger>
+                                <TabsTrigger value="unit">{` `} UNIT : {` `} {unit_name}</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="me">
+                                <DataTable
+                                    columns={columns}
+                                    data={transactions ?? []}
+                                    filterKey='reference'
+                                    filterColumns={[{ key: "name", title: "customer" }, { key: "bank" }, { key: "payment_mode", title: "mode" }]}
+                                    deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
+                                    onDelete={(row) => {
+                                        ""
+                                        // const ids = row.map((r) => r.original.id);
+                                        // deleteTransactionsQuery.mutate({ ids });
+                                    }}
+                                    disabled={isDisabled}
+                                />
+                            </TabsContent>
+                            <TabsContent value="region">
+                                <DataTable
+                                    columns={columnsRegion}
+                                    data={transactions_per_region ?? []}
+                                    filterKey='reference'
+                                    filterColumns={[{ key: "name", title: "customer" }, { key: "bank" }, { key: "payment_mode", title: "mode" }, { key: "unit" }]}
+                                    deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
+                                    onDelete={(row) => {
+                                        ""
+                                        // const ids = row.map((r) => r.original.id);
+                                        // deleteTransactionsQuery.mutate({ ids });
+                                    }}
+                                    disabled={isDisabled}
+                                />
+                            </TabsContent>
+                            <TabsContent value="unit">
+                                <DataTable
+                                    columns={columns}
+                                    data={transactions_per_unit ?? []}
+                                    filterKey='reference'
+                                    filterColumns={[{ key: "name", title: "customer" }, { key: "bank" }, { key: "payment_mode", title: "mode" }]}
+                                    deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
+                                    onDelete={(row) => {
+                                        ""
+                                        // const ids = row.map((r) => r.original.id);
+                                        // deleteTransactionsQuery.mutate({ ids });
+                                    }}
+                                    disabled={isDisabled}
+                                />
+                            </TabsContent>
+                        </Tabs>
+                    )}
+
+                    {user?.role?.name !== "COMMERCIAL" && (
+                        <DataTable
+                            columns={columnsInit}
+                            data={transactions}
+                            filterKey='reference'
+                            filterColumns={[{ key: "name", title: "customer" }]}
+                            deletable={hasPermission(user, "TRANSACTION-BULKDELETE")}
+                            onDelete={(row) => {
+                                ""
+                                // const ids = row.map((r) => r.original.id);
+                                // deleteTransactionsQuery.mutate({ ids });
+                            }}
+                            disabled={isDisabled}
+                        />
+                    )
+                    }
+
                 </CardContent>
             </Card>
         </div>
+        </>
     )
 }
 

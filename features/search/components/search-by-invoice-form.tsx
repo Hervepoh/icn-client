@@ -1,11 +1,13 @@
 "use client"
-import { Loader2 } from 'lucide-react';
 
 import { z } from "zod"
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { startTransition } from 'react';
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { startTransition, useState } from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
     Form,
@@ -17,8 +19,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
-import Cookies from 'js-cookie';
+
+import { useLoadingStore } from '@/hooks/use-loading-store';
 
 
 const formSchema = z.object({
@@ -30,56 +32,50 @@ type FormValues = z.input<typeof formSchema>;
 type Props = {
     label: string
     placeholder?: string
-    setIsFirstView: (value: boolean) => void;
     setInvoices: (value: any) => void;
-    setError: (value: string) => void;
-    setIsPending: (value: boolean) => void;
     setViewRecap: (value: boolean) => void;
+    setNewProgress: (value: number) => void;
 }
 
 export const SearchByInvoiceForm = ({
     label,
     placeholder,
-    setIsFirstView,
     setInvoices,
-    setError,
-    setIsPending,
-    setViewRecap
+    setViewRecap,
+    setNewProgress
 }: Props) => {
-    const [isLoading, setIsLoading] = useState(false);
+    const { loading, startLoading, stopLoading } = useLoadingStore();
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {},
     });
 
+    const timerEndLoading = ():void => {
+        setNewProgress(100);
+    }
+    
     const handleSubmit = (values: FormValues) => {
-   
+        setInvoices([]);
+        setNewProgress(0);
+        startLoading();
+        setViewRecap(false);
 
         startTransition(async () => {
-            setIsLoading(true);
-            setIsPending(true);
-
             try {
-                const response = await axios.post('/api/search' ,{ enpoint: '/search-by-invoice', values: values , accessToken : Cookies.get('access_token')});
-
+                const response = await axios.post('/api/search', { enpoint: '/search-by-invoice', values: values, accessToken: Cookies.get('access_token') });
                 setInvoices(response.data.bills ?? []);
-                setIsLoading(false);
-                setIsPending(false);
-            } catch (error) {
-                setError("something went wrong");
-                setIsLoading(false);
-                setIsPending(false);
-                if (axios.isAxiosError(error)) {
-                    throw error;
-                } else {
-                    throw new Error('Une erreur inconnue s\'est produite');
+                setTimeout(timerEndLoading, 5000);
+                if (response.data?.message) {
+                    toast.error(response.data?.message)
                 }
+            } catch (error) {
+                console.error("[SearchByInvoiceForm]",error); // Handle errors from file reading or validation
+            } finally {
+                stopLoading();
             }
-
         });
 
-        setIsFirstView(false);
-        setViewRecap(false);
+
     }
 
     return (
@@ -97,7 +93,7 @@ export const SearchByInvoiceForm = ({
                             <FormLabel>{label}</FormLabel>
                             <FormControl>
                                 <Input
-                                    disabled={isLoading}
+                                    disabled={loading}
                                     placeholder={placeholder}
                                     {...field}
                                 />
@@ -110,9 +106,9 @@ export const SearchByInvoiceForm = ({
                 <Button
                     type="submit"
                     className="w-full"
-                    disabled={isLoading}
+                    disabled={loading}
                 >
-                    {isLoading ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
+                    {loading ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
                 </Button>
 
             </form>

@@ -25,6 +25,7 @@ import { RadialVariant } from '@/components/graph-radial-variant';
 
 
 type Props = {
+    title?: string
     data?: {
         name: string;
         value: number;
@@ -32,6 +33,7 @@ type Props = {
 }
 
 export const Pie = ({
+    title,
     data = []
 }: Props) => {
 
@@ -46,7 +48,7 @@ export const Pie = ({
         <Card className='border-none drop-shadow-sm'>
             <CardHeader className='flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between'>
                 <CardTitle className='text-xl line-clamp-1'>
-                    Categories
+                    {title ?? `Categories`}
                 </CardTitle>
                 <Select
                     defaultValue={chartType}

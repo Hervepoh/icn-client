@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     filterKey: string,
+    filterColumns?: {title?:string,key:string;}[]
     deletable?: boolean
     onDelete: (rows: Row<TData>[]) => void,
     disabled?: boolean
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
     columns,
     data,
     filterKey,
+    filterColumns,
     deletable=false,
     onDelete,
     disabled
@@ -89,7 +91,7 @@ export function DataTable<TData, TValue>({
             <ConfirmationDialog />
             <div className="flex items-center py-4">
                 <div className="flex items-center gap-x-3">
-                    <DataTableToolbar table={table} filterKey={filterKey} />
+                    <DataTableToolbar table={table} filterKey={filterKey} filterColumns={filterColumns} filterStatus={true} />
                 </div>
                 {
                     deletable && table.getFilteredSelectedRowModel().rows.length > 0 && (

@@ -31,6 +31,7 @@ interface User {
     email: string;
     password: string;
     avatar: string | undefined;
+    unitId: string | undefined;
     roles: UserRole[];
     role: Role;
     ipAddress: string;

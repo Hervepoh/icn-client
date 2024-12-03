@@ -60,6 +60,7 @@ export default function ReferencesPage(props: Props) {
                         columns={columns}
                         data={references}
                         filterKey='client'
+                        filterColumns={[{key:"region"},{key:"agency"},{key:"service_no"},{key:"status"}]}
                         onDelete={(row) => {
                             // const ids = row.map((r) => r.original.id);
                             // deleteCategoriesQuery.mutate({ ids });

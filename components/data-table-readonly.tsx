@@ -179,7 +179,7 @@ export function DataTableReadOnly<TData, TValue>({
         <div>
             <div className="flex items-center justify-between py-4">
                 <div className="flex items-center gap-x-3">
-                    <DataTableToolbar table={table} filterKey={filterKey} />
+                    <DataTableToolbar table={table} filterKey={filterKey} filterStatus={false} />
                 </div>
                 {
                     table.getFilteredSelectedRowModel().rows.length > 0 && (

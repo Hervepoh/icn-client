@@ -45,7 +45,7 @@ export function DatePicker(
                     selected={value}
                     onSelect={onChange}
                     // disabled={disabled}
-                    disabled={(date) => date <  new Date(new Date().setHours(0, 0, 0, 0))} // Disable past dates  but allow today
+                    disabled={(date) => date >  new Date(new Date().setHours(0, 0, 0, 0))} // Disable future dates  but allow today
                     initialFocus
                     captionLayout="dropdown" //Also: dropdown-buttons |  dropdown | buttons 
                     fromYear={2000} 

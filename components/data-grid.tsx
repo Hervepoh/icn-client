@@ -1,7 +1,7 @@
 "use client";
 
 import { FaPiggyBank } from "react-icons/fa";
-import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
+import { FaArrowTrendUp, FaArrowTrendDown , FaFlaskVial, FaVialCircleCheck } from "react-icons/fa6";
 import { MdPendingActions } from "react-icons/md";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { DataCard, DataCardLoading } from "@/components/data-card";
@@ -18,9 +18,9 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 pb-2 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 pb-2 mb-8">
         {
-          [1, 2, 3, 4, 5].map((i) => <DataCardLoading key={i} />)
+          [1, 2, 3, 4, 5, 6].map((i) => <DataCardLoading key={i} />)
         }
       </div >
     )
@@ -28,7 +28,7 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 pb-2 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 pb-2 mb-8">
       <DataCard
         title={statuses[2].label}
         value={data?.transactions?.nber[statuses[2].value] || 0}
@@ -42,7 +42,16 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
         title={statuses[3].label}
         value={data?.transactions?.nber[statuses[3].value] || 0}
         percentageChange={data?.remainingChange}
-        icon={MdPendingActions}
+        icon={FaVialCircleCheck}
+        variant="success"
+        dateRange={data?.dateRangeLabel}
+      />
+
+      <DataCard
+        title={statuses[4].label}
+        value={data?.transactions?.nber[statuses[4].value] || 0}
+        percentageChange={data?.expensesChange}
+        icon={FaArrowTrendDown}
         variant="danger"
         dateRange={data?.dateRangeLabel}
       />
@@ -51,14 +60,14 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
         title={statuses[5].label}
         value={data?.transactions?.nber[statuses[5].value] || 0}
         percentageChange={data?.expensesChange}
-        icon={FaArrowTrendDown}
-        variant="danger"
+        icon={MdPendingActions}
+        variant="warning"
         dateRange={data?.dateRangeLabel}
       />
 
       <DataCard
-        title={statuses[6].label}
-        value={data?.transactions?.nber[statuses[6].value] || 0}
+        title={statuses[7].label}
+        value={data?.transactions?.nber[statuses[7].value] || 0}
         percentageChange={data?.incomeChange}
         icon={FaArrowTrendUp}
         variant="success"
@@ -66,8 +75,8 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
       />
 
       <DataCard
-        title={statuses[7].label}
-        value={data?.transactions?.nber[statuses[7].value] || 0}
+        title={statuses[8].label}
+        value={data?.transactions?.nber[statuses[8].value] || 0}
         percentageChange={data?.incomeChange}
         icon={FaArrowTrendUp}
         variant="success"

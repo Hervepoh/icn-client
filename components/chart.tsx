@@ -26,6 +26,7 @@ import { ComposedVariant } from '@/components/chart-line-variant';
 
 
 type Props = {
+    title?: string
     data?: {
         date: string;
         number: number;
@@ -34,6 +35,7 @@ type Props = {
 }
 
 export const Chart = ({
+    title,
     data = []
 }: Props) => {
 
@@ -48,7 +50,7 @@ export const Chart = ({
         <Card className='border-none drop-shadow-sm'>
             <CardHeader className='flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between'>
                 <CardTitle className='text-xl line-clamp-1'>
-                    Requests
+                    {title ?? `Requests`}
                 </CardTitle>
                 <Select
                     defaultValue={chartType}

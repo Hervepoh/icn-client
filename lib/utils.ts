@@ -190,3 +190,13 @@ export const getEntityIdByName = (entity_name: string, entity_List: Entity[]): s
   const entity = entity_List.find(e => e.name === entity_name);
   return entity ? entity.id : "";
 };
+export const getEntityNameById = (entity_id: string, entity_List: Entity[]): string => {
+  const entity = entity_List.find(e => e.id === entity_id);
+  return entity ? entity.name : "";
+};
+
+
+// Function to get entity By ID
+export const getEntityById = (entity_id: string, entity_List: Entity[]) => {
+  return entity_List.find(entity => entity.id === entity_id) || null;
+}

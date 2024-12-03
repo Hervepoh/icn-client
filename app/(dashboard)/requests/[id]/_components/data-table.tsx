@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Trash } from "lucide-react"
+import { PlusCircle } from "lucide-react"
 
 import {
     ColumnDef,
@@ -59,12 +59,12 @@ export function DataTable<TData, TValue>({
     const [rowSelection, setRowSelection] = React.useState({})
     const [pagination, setPagination] = React.useState({
         pageIndex: 0, //initial page index
-        pageSize: 100, //default page size
+        pageSize: 10000, //default page size
       });
 
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
-        message: "You are about to add the selected items to your ICN application, NB only the empty data (will be added) if you agree just click on the “Add” button.",
+        message: "You are about to add the selected items to your ICN application, NB : only the valid data (will be added) if you agree just click on the “Confirm” button.",
     });
 
     const table = useReactTable({
@@ -91,7 +91,7 @@ export function DataTable<TData, TValue>({
     return (
         <div>
             <ConfirmationDialog />
-            <div className="flex items-center justify-end  py-4">
+            <div className="flex items-center py-4">
                 <div className="flex items-center gap-x-3">
                     <Input
                         placeholder={`Filter name...`}
@@ -128,8 +128,8 @@ export function DataTable<TData, TValue>({
                             variant="default"
                             className="ml-auto font-normal text-xs"
                         >
-                            <Trash className="size-4 mr-2" />
-                            Ajouter au panier ({table.getFilteredSelectedRowModel().rows.length})
+                            <PlusCircle className="size-4 mr-2" />
+                            Add to Cart ({table.getFilteredSelectedRowModel().rows.length})
                         </Button>
                     )
                 }

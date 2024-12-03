@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export async function POST(request: NextRequest) {
     const data = await request.json();
-    
+
     if (!NEXT_PUBLIC_SERVER_URI) {
         return NextResponse.json(
             { error: 'Server URI is not defined' },
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
                     'Content-Type': 'application/json',
                     'Authorization': data.accessToken
                 },
-                body:  JSON.stringify(data.data),
+                body: JSON.stringify(data.data),
                 credentials: 'include'
             });
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     // }
 
     // if (data.enpoint == '/create-request-detail') {
-        
+
     //     try {
     //         const response = await fetch(`$${NEXT_PUBLIC_SERVER_URI}/requests-details/bulk/${data.id}`, {
     //             method: 'POST',

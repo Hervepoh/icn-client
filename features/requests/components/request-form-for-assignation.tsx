@@ -31,7 +31,8 @@ const vInput = {
 const defaultSchema = z.object(vInput);
 const formSchema = z.object({
     ...vInput,
-    aassignTo: z.string().min(1, "You need to select a key account manager"),
+    regionId: z.string().min(1, "You need to select a key account manager"),
+    unitId: z.string().optional(),
     //evidence : z.instanceof(FileList).optional(),
 });
 const apiSchema: any = {}
@@ -44,7 +45,8 @@ type Props = {
     id: string;
     defaultValues?: DefaultValues;
     onAssign: (value:any) => void;
-    usersOptions: { label: string; value: string }[];
+    regionOptions: { label: string; value: string }[];
+    unitOptions: { label: string; value: string; regionId: string; }[];
     disabled?: boolean;
 }
 
@@ -53,7 +55,8 @@ export const RequestFormForAssignation = (
         id,
         defaultValues,
         onAssign,
-        usersOptions,
+        regionOptions,
+        unitOptions,
         disabled
     }: Props) => {
 
@@ -62,8 +65,16 @@ export const RequestFormForAssignation = (
         defaultValues: defaultValues,
     });
 
+    const { watch, setValue } = form;
+
+    const selectedRegionId = watch("regionId");
+
+    // Filtrer les unités selon la région sélectionnée
+    const filteredUnitOptions = unitOptions.filter(unit => unit.regionId === selectedRegionId);
+
+
     const handleSubmit = (values: FormValues) => {
-         onAssign({userId:values.aassignTo});
+        onAssign({ regionId:values.regionId , unitId:values.unitId});
     }
 
     return (
@@ -174,16 +185,22 @@ export const RequestFormForAssignation = (
                         <div className='mb-10'>
                             <FormField
                                 control={form.control}
-                                name="aassignTo"
+                                name="regionId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Key Account Manager</FormLabel>
+                                        <FormLabel>
+                                           Assign to
+                                        </FormLabel>
                                         <FormControl>
                                             <Select
-                                                placeholder='Select a key account manager'
-                                                options={usersOptions}
+                                                placeholder='Select a region'   // 'Select a key account manager'
+                                                options={regionOptions}
                                                 value={field.value}
-                                                onChange={field.onChange}
+                                                // onChange={field.onChange}
+                                                onChange={(value) => {
+                                                    field.onChange(value);
+                                                    setValue("unitId", ''); // Réinitialiser l'unité sélectionnée
+                                                }}
                                                 disabled={disabled}
                                                 onCreate={() => ''}
                                             />
@@ -194,6 +211,30 @@ export const RequestFormForAssignation = (
                             />
                         </div>
 
+                        <div className='mb-10'>
+                            <FormField
+                                control={form.control}
+                                name="unitId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Unit Responsible
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Select
+                                                placeholder='Select a unit'   // 'Select a key account manager'
+                                                options={filteredUnitOptions}
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                disabled={disabled || !selectedRegionId} // Désactiver si aucune région sélectionnée}
+                                                onCreate={() => ''}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <div className="py-10">
                             <div className='flex justify-center gap-5 mt-10'>

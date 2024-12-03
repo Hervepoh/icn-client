@@ -11,10 +11,12 @@ import { statuses } from '@/config/status.config'
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
   filterKey: string
+  filterColumns?: { title?: string, key: string; }[]
+  filterStatus: boolean
 }
 
 export function DataTableToolbar<TData>({
-  table, filterKey
+  table, filterKey, filterColumns, filterStatus
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -27,25 +29,35 @@ export function DataTableToolbar<TData>({
           onChange={(event) =>
             table.getColumn(filterKey)?.setFilterValue(event.target.value)
           }
-          className='h-8 w-[150px] lg:w-[250px]'
+          className='h-8 min-w-[150px] lg:max-w-[250px]'
         />
-        <Input
-          placeholder={`Filter customer...`}
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='h-8 w-[150px] lg:w-[250px]'
-        />
-        <div className='flex gap-x-2'>
-          {table.getColumn('status') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('status')}
-              title='Status'
-              options={statuses}
-            />
-          )}
-        </div>
+        {/* Dynamically create an Input for each filterColumn */}
+        {filterColumns?.map((filterColumn) => (
+          <Input
+            key={filterColumn.key}
+            placeholder={`Filter ${filterColumn.title ?? filterColumn.key}...`}
+            value={(table.getColumn(filterColumn.key)?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn(filterColumn.key)?.setFilterValue(event.target.value)
+            }
+            className='h-8  min-w-[150px] lg:max-w-[250px]'
+          />
+        ))}
+        {
+          filterStatus && (
+            <div className='flex gap-x-2'>
+              {table.getColumn('status') && (
+                <DataTableFacetedFilter
+                  column={table.getColumn('status')}
+                  title='Status'
+                  options={statuses}
+                />
+              )}
+            </div>
+          )
+        }
+
+
         {isFiltered && (
           <Button
             variant='ghost'

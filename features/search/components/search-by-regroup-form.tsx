@@ -2,10 +2,12 @@
 import { Loader2 } from 'lucide-react';
 
 import { z } from "zod"
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { startTransition, useState } from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import { startTransition } from 'react';
+import { toast } from 'sonner';
 
 import {
     Form,
@@ -17,10 +19,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DatePicker } from '@/components/date-picker';
-import { format } from 'date-fns';
-import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
-import Cookies from 'js-cookie';
+import { DatePicker } from '@/components/date-picker-full';
+
+import { useLoadingStore } from '@/hooks/use-loading-store';
 
 
 const formSchema = z.object({
@@ -32,75 +33,64 @@ const formSchema = z.object({
 type FormValues = z.input<typeof formSchema>;
 
 type Props = {
-    key: string
     label: string
     placeholder?: string
-    setIsFirstView: (value: boolean) => void;
     setInvoices: (value: any) => void;
-    setError: (value: string) => void;
-    setIsPending: (value: boolean) => void;
     setViewRecap: (value: boolean) => void;
+    setNewProgress: (value: number) => void;
 }
 
 export const SearchByRegroupForm = ({
-    key,
     label,
     placeholder,
-    setIsFirstView,
     setInvoices,
-    setError, 
-    setIsPending , 
-    setViewRecap 
+    setViewRecap,
+    setNewProgress
 }: Props) => {
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { loading, startLoading, stopLoading } = useLoadingStore();
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {},
     });
 
+    const timerEndLoading = ():void => {
+        for (let index = 0; index < 100; index++) {
+            setNewProgress(index);
+        }
+    }
+
     const handleSubmit = (values: FormValues) => {
-        setIsFirstView(false);
+        setInvoices([]);
+        setNewProgress(0);
+        startLoading();
+        setViewRecap(false);
 
         startTransition(async () => {
-            setIsLoading(true);
-            setIsPending(true);
-            // const config: AxiosRequestConfig = {
-            //     method: 'get',
-            //     maxBodyLength: Infinity,
-            //     url: `${NEXT_PUBLIC_SERVER_URI}/search-unpaid?by=regroup&value=${values.value}&from=${format(values.from, "yyyy-MM-dd")}&to=${format(values.to, "yyyy-MM-dd")}`,
-            //     headers: { 'Authorization': Cookies.get('access_token')},
-            //     withCredentials: true, 
-            //     data: ''
-            // };
             try {
-                // const response = await axios.request(config);
-                const response = await axios.post('/api/search' ,{ enpoint: '/search-by-regroup', values: values , accessToken : Cookies.get('access_token')});
+                const response = await axios.post('/api/search', { enpoint: '/search-by-regroup', values: values, accessToken: Cookies.get('access_token') });
                 setInvoices(response.data.bills ?? []);
-            } catch (error) {
-                setError("something went wrong");
-                setIsLoading(false);
-                setIsPending(false);
-                if (axios.isAxiosError(error)) {
-                    throw error;
-                } else {
-                    throw new Error('Une erreur inconnue s\'est produite');
+                setTimeout(timerEndLoading, 5000);
+                if (response.data?.message) {
+                    toast.error(response.data?.message)
                 }
+            } catch (error) {
+                console.error("[SearchByRegroupForm]",error);// Handle errors from file reading or validation
+            } finally {
+                stopLoading();
             }
-            setIsLoading(false);
-            setIsPending(false);
         });
 
         setViewRecap(false);
     }
 
-    const disabled = isLoading;
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="w-2/3 space-y-4 pt-4"
             >
-
                 <FormField
                     control={form.control}
                     name="value"
@@ -109,7 +99,7 @@ export const SearchByRegroupForm = ({
                             <FormLabel>{label}</FormLabel>
                             <FormControl>
                                 <Input
-                                    disabled={disabled}
+                                    disabled={loading}
                                     placeholder={placeholder}
                                     {...field}
                                 />
@@ -129,7 +119,7 @@ export const SearchByRegroupForm = ({
                                 <DatePicker
                                     value={field.value}
                                     onChange={field.onChange}
-                                    disabled={disabled}
+                                    disabled={loading}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -147,7 +137,7 @@ export const SearchByRegroupForm = ({
                                 <DatePicker
                                     value={field.value}
                                     onChange={field.onChange}
-                                    disabled={disabled}
+                                    disabled={loading}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -158,9 +148,9 @@ export const SearchByRegroupForm = ({
                 <Button
                     type="submit"
                     className="w-full"
-                    disabled={disabled}
+                    disabled={loading}
                 >
-                    {disabled ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
+                    {loading ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Search"}
                 </Button>
 
             </form>

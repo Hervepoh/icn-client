@@ -30,7 +30,7 @@ const formSchema = z.object({
     payment_mode: z.string(),
     bank: z.string(),
     amount: z.string(),
-    //description: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
 });
 type FormValues = z.input<typeof formSchema>;
 
@@ -88,6 +88,7 @@ export function EditRequestSheet() {
                 : new Date(),
             
             payment_mode: transactionQuery.data.paymentModeId,
+            description: transactionQuery.data.description,
             // categoryId: transactionQuery.data.categoryId,
             // notes: transactionQuery.data.notes,
         }
@@ -97,6 +98,7 @@ export function EditRequestSheet() {
             bank: "",
             payment_date: new Date(),
             payment_mode: "",
+            description: "",
             // accountId: "",
             // categoryId: "",
             // notes:""

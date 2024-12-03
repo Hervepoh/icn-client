@@ -10,13 +10,15 @@ import {
 } from "@/components/ui/sheet";
 
 import { useConfirm } from "@/hooks/use-confirm";
-import { useGetCommercialUsers } from "@/features/users/api/use-get-commercial-users";
+// import { useGetCommercialUsers } from "@/features/users/api/use-get-commercial-users";
+// import { useGetSegments } from "@/features/segments/api/use-get-segments";
+import { useGetRegions } from "@/features/regions/api/use-get-regions";
+import { useGetUnits } from "@/features/unit/api/use-get-units";
 import { useGetRequest } from "@/features/requests/api/use-get-request";
 import { useEditRequest } from "@/features/requests/api/use-edit-request";
 import { useOpenRequestAssignation } from "@/features/requests/hooks/use-open-request-for-assignation";
 import { RequestFormForAssignation } from "@/features/requests/components/request-form-for-assignation";
 import { status } from "@/config/status.config";
-
 
 
 export function OpenRequestForAssignationSheet() {
@@ -26,18 +28,38 @@ export function OpenRequestForAssignationSheet() {
         message: "You are about to assign to a key account manager this transaction , Are you sure you want to perform this action?",
     });
 
-    const usersQuery = useGetCommercialUsers();
-    const usersOptions = (usersQuery.data ?? []).map(
+    const regionsQuery = useGetRegions();
+    const regionOptions = (regionsQuery.data ?? []).map(
         (item: { name: any; id: any; }) => ({
             label: item.name,
             value: item.id
         })
     );
+
+    const unitsQuery = useGetUnits();
+    const unitOptions = (unitsQuery.data ?? []).map(
+        (item: { name: any; id: any; regionId: any; }) => ({
+            label: item.name,
+            value: item.id,
+            regionId: item.regionId
+        })
+    );
+
+    // const usersQuery = useGetCommercialUsers();
+    // const usersOptions = (usersQuery.data ?? []).map(
+    //     (item: { name: any; id: any; }) => ({
+    //         label: item.name,
+    //         value: item.id
+    //     })
+    // );
     const transactionQuery = useGetRequest(id);
     const editMutation = useEditRequest(id);
 
     const isPending = editMutation.isPending;
-    const isLoading = transactionQuery.isLoading || usersQuery.isLoading;
+    const isLoading = transactionQuery.isLoading
+        // || usersQuery.isLoading
+        || regionsQuery.isLoading
+        ;
 
     const defaultValues = transactionQuery.data
         ? {
@@ -57,16 +79,22 @@ export function OpenRequestForAssignationSheet() {
             payment_mode: "",
         };
 
-    const onAssign = async (value: { userId: any; }) => {
+    const onAssign = async (value: { regionId: string; unitId?: string }) => {
         const ok = await confirm();
         if (ok) {
-            editMutation.mutate({ userId: value.userId , status: status[5] }, {
+            editMutation.mutate({
+                userId: "",
+                regionId: value.regionId,
+                unitId: value.unitId,
+                status: status[5]
+            }, {
                 onSuccess: () => {
                     onClose();
                 },
             });
         }
     }
+
 
     if (!id) return
 
@@ -89,7 +117,8 @@ export function OpenRequestForAssignationSheet() {
                             <RequestFormForAssignation
                                 id={id}
                                 defaultValues={defaultValues}
-                                usersOptions={usersOptions}
+                                unitOptions={unitOptions}
+                                regionOptions={regionOptions}
                                 onAssign={onAssign}
                                 disabled={isPending}
                             />

@@ -75,7 +75,7 @@ export const DataCard = ({
                     <CardTitle className="text-2xl line-clamp-1">
                         {title}
                     </CardTitle>
-                    <CardDescription className=" line-clamp-1">
+                    <CardDescription className="line-clamp-1">
                         {dateRange}
                     </CardDescription>
                 </div>

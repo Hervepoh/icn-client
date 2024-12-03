@@ -2,7 +2,7 @@
 
 import { Chart, ChartLoading } from "@/components/chart";
 import { Pie, PieLoading } from "@/components/graph";
-import { useGetSummary } from "@/features/summary/api/use-get-summary";
+import { Tab } from "./table";
 
 
 type DataType = {
@@ -10,7 +10,7 @@ type DataType = {
   isLoading: boolean;
 }
 
-export const DataCharts = ({data,isLoading} : DataType) => {
+export const DataCharts = ({ data, isLoading }: DataType) => {
 
 
   if (isLoading) {
@@ -28,17 +28,46 @@ export const DataCharts = ({data,isLoading} : DataType) => {
 
   return (
     //Send the days data recieved from the summary Endpoint
-    <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
-      <div className="col-span-1 lg:col-span-3 xl:col-span-4">
-        <Chart
-          data={data?.days ?? []}
-        />
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
+        <div className="col-span-1 lg:col-span-3 xl:col-span-4">
+          <Chart
+            data={data?.days ?? []}
+          />
+        </div>
+        <div className="col-span-1 lg:col-span-3 xl:col-span-2">
+          <Pie
+            title={"By Status"}
+            data={data?.categories.nber ?? []}
+          />
+        </div>
       </div>
-      <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-        <Pie
-          data={data?.categories.nber ?? []}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 mt-10">
+        <div className="col-span-1 lg:col-span-3 xl:col-span-2">
+          <Pie
+            title={"By regions"}
+            data={data?.regions ?? []}
+          />
+        </div>
+        <div className="col-span-1 lg:col-span-3 xl:col-span-4">
+          <Tab
+            title={"Repartition by region and status"}
+            type="region"
+            data={data?.group?.by_region ?? []}
+          />
+        </div>
+
       </div>
-    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mt-10">
+        <div className="col-span-1 lg:col-span-1 xl:col-span-1">
+          <Tab
+            type="unit"
+            title={"Repartition by unit and status"}
+            data={data?.group?.by_unit ?? []}
+          />
+        </div>
+
+      </div>
+    </>
   )
 }

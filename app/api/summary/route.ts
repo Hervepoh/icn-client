@@ -20,11 +20,12 @@ export async function POST(request: NextRequest) {
             credentials: 'include' 
         });
 
-        const result = await response.json();
-
         if (!response.ok) {
-            return NextResponse.json({ ...result }, { status: response.status });
+            console.error('SUMMARY', await response.text());
+            return NextResponse.json({ ...response }, { status: response.status });
         }
+
+        const result = await response.json();
 
         return NextResponse.json({ ...result });
     } catch (error) {

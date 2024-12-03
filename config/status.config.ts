@@ -47,7 +47,13 @@ export const statuses = [
     },
     {
         value: 'pending_commercial_input',
-        label: 'Commercial',
+        label: 'Awaiting KAM INPUT',
+        icon: SquarePenIcon,
+        iconColor: 'text-black',
+    },
+    {
+        value: 'pending_finance_validation',
+        label: 'Awaiting Commercial validation',
         icon: SquarePenIcon,
         iconColor: 'text-black',
     },

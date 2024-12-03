@@ -28,10 +28,11 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { DataTableReferenceToolbar } from "@/components/data-table-reference-toolbar"
 import { DataTablePagination } from "@/components/data-table-pagination"
+import { DataTableToolbar } from "@/components/data-table-toolbar"
 
 import { useConfirm } from "@/hooks/use-confirm"
+
 
 
 
@@ -39,6 +40,7 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
     filterKey: string,
+    filterColumns?: {title?:string,key:string;}[],
     deletable?: boolean
     onDelete: (rows: Row<TData>[]) => void,
     disabled?: boolean
@@ -48,6 +50,7 @@ export function DataTable<TData, TValue>({
     columns,
     data,
     filterKey,
+    filterColumns,
     deletable=false,
     onDelete,
     disabled
@@ -102,7 +105,7 @@ export function DataTable<TData, TValue>({
             <ConfirmationDialog />
             <div className="flex items-center py-4">
                 <div className="flex items-center gap-x-3">
-                    <DataTableReferenceToolbar table={table} filterKey={filterKey} />
+                    <DataTableToolbar table={table} filterKey={filterKey}  filterColumns={filterColumns} filterStatus={false}/>
                 </div>
                 {
                     deletable && table.getFilteredSelectedRowModel().rows.length > 0 && (

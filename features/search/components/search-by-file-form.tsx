@@ -1,36 +1,21 @@
 "use client"
 
+import * as XLSX from 'xlsx';
 import * as z from 'zod';
+import axios from 'axios';
+import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 import { useForm } from "react-hook-form"
 import { Loader2 } from 'lucide-react';
-import { startTransition, useState } from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import { useEffect, useState } from 'react';
 
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from '@/components/ui/label';
-import * as XLSX from 'xlsx';
-import { toast, Toaster } from 'sonner';
-import Cookies from 'js-cookie';
 
+import { useAlert } from '@/hooks/use-alert';
+import { useLoadingStore } from '@/hooks/use-loading-store';
 
-const expectedHeaderSchema = z.array(z.string()).refine(
-    (headers) =>
-        headers.length === 4 &&
-        headers[0] === 'NUMACI' &&
-        headers[1] === 'ID' &&
-        headers[2] === 'PK_BILL_GENERATED_ID' &&
-        headers[3] === 'DUE_AMT',
-    'Invalid file header. Expected: NUMACI, ID, PK_BILL_GENERATED_ID, DUE_AMT'
-);
 
 const excelSchema = z.object({
     NUMACI: z.string(),
@@ -53,27 +38,29 @@ const fileExtensionSchema = z.string().refine(
 type Props = {
     label: string
     placeholder?: string
-    setIsFirstView: (value: boolean) => void;
     setInvoices: (value: any) => void;
-    setError: (value: string) => void;
-    setIsPending: (value: boolean) => void;
     setViewRecap: (value: boolean) => void;
+    setNewProgress: (value: number) => void;
     reference: string
 }
 
 export const SearchByFileForm = ({
     label,
     placeholder,
-    setIsFirstView,
     setInvoices,
-    setError, setIsPending, setViewRecap,
+    setViewRecap,
+    setNewProgress,
     reference,
 }: Props) => {
-
-    const [isLoading, setIsLoading] = useState(false);
-
+    useEffect(() => {
+      setNewProgress(0);
+    }, [])
+    
+    const [message, setMessage] = useState("");
+    
+    const { loading, startLoading, stopLoading } = useLoadingStore();
     const { register, handleSubmit, reset } = useForm();
-    const [excelData, setExcelData] = useState<ExcelData[]>([]);
+    const [ConfirmationDialog, confirm] = useAlert({ title: "You can not process this action", message });
 
     const validateNumaci = (bills: any[], expectedNumaci: string) => {
         const errors: string[] = [];
@@ -85,111 +72,129 @@ export const SearchByFileForm = ({
         return errors;
     };
 
-    const onSubmit = (data: any) => {
-        setIsFirstView(false);
-        setViewRecap(false);
-        const file = data.file[0];
-
-        fileExtensionSchema.parse(file.name);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const workbook = XLSX.read(e.target?.result, { type: 'binary' });
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-            const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            const headers: any = rows[0];
-            const GoodHeaderFormat = [
-                "NUMACI",
-                "ID",
-                "PK_BILL_GENERATED_ID",
-                "DUE_AMT"
-            ];
-
-            if (GoodHeaderFormat.length === headers?.length
-                && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
-
-                const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
-
-                // Validation
-                const validationErrors = validateNumaci(jsonData, reference);
-
-               // Displaying Errors
-                if (validationErrors.length > 0) {
-                    validationErrors.forEach(error => {
-                        toast.error(error); 
-                    });
-                   
-                } else {
-                    startTransition(async () => {
-                        setIsLoading(true);
-    
-                        const invoices = await Promise.all(jsonData.map(async (invoice) => {
-                            const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
-                            const goodData = response.data.bills ?? [];
-                            const result = [
-                                goodData.length > 0 ? goodData[0][0] : "",
-                                invoice.ID,
-                                invoice.PK_BILL_GENERATED_ID,
-                                goodData.length > 0 ? goodData[0][3] : "",
-                                goodData.length > 0 ? goodData[0][4] : "",
-                                goodData.length > 0 ? goodData[0][5] : 0,
-                                invoice.DUE_AMT,
-                                goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : "") : "Invoice not exist"
-                            ]
-    
-                            return result;
-                        }));
-    
-                        setInvoices(invoices);
-    
-                        setIsLoading(false);
-                        setIsPending(false);
-                    });
-                }
-
-        
-            } else {
-                toast.error("Headers are in a wrong format , please use the template")
-            }
-
-            reset();
-        };
-        reader.readAsBinaryString(file);
-
-
+    const cleanJsonData = (obj: any) => {
+        const nvlObj: { [key: string]: string | number } = {};
+        for (const key in obj) {
+            const nvlKey = key.trim();
+            nvlObj[nvlKey] = (typeof obj[key] === 'string') ? obj[key].trim() : obj[key];
+        }
+        return nvlObj;
     }
 
+    const readFile = (file: File) => {
+        return new Promise<any[]>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const workbook = XLSX.read(e.target?.result, { type: 'binary' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const headers: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
 
+                const GoodHeaderFormat = ["NUMACI", "ID", "PK_BILL_GENERATED_ID", "DUE_AMT"];
+                if (GoodHeaderFormat.length === headers.length && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
+                    const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
+                    const cleanData = jsonData.map(cleanJsonData)
+                    resolve(cleanData);
+                } else {
+                    setMessage("Headers are in the wrong format, please use the template. Expected: NUMACI, ID, PK_BILL_GENERATED_ID, DUE_AMT");
+                    confirm();
+                    reject(new Error("Invalid header format"));
+                }
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsBinaryString(file);
+        });
+    };
 
-    const disabled = isLoading;
+    const fetchData = async (items: any[]) => {
+        const validationErrors = validateNumaci(items, reference);
+        if (validationErrors.length > 0) {
+            setMessage("Invalid ACI Number in your file");
+            const ok = await confirm();
+            stopLoading();
+            return;
+        }
+
+        const totalItems = items.length;
+        const chunkSize = 15; // Limit the number of simultant request
+        const invoices = [];
+        for (let i = 0; i < totalItems; i+=chunkSize) {
+            const chunk = items.slice(i, i+chunkSize);
+            const promises = chunk.map(async (invoice: { PK_BILL_GENERATED_ID: any; ID: any; DUE_AMT: any; }) => {
+                const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
+                const goodData = response.data.bills ?? [];
+                console.log(goodData[0]);
+                return [
+                    goodData.length > 0 ? goodData[0][0] : "",
+                    invoice.ID,
+                    invoice.PK_BILL_GENERATED_ID,
+                    goodData.length > 0 ? goodData[0][3] : "",
+                    goodData.length > 0 ? goodData[0][4] : "",
+                    goodData.length > 0 ? goodData[0][5] : 0,
+                    invoice.DUE_AMT,
+                    goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : "") : "Invoice not exist"
+                ];
+            });
+
+            try {
+                const responses = await Promise.all(promises);
+                invoices.push(...responses);
+                // Update the progression percentage
+                const newProgress = Math.round(((i+chunk.length)/totalItems) * 100);
+                setNewProgress(newProgress);
+            } catch (error) {
+                console.log("FETCH DATA",error);
+            }
+
+            
+        }
+        setInvoices(invoices);
+    }
+
+    const onSubmit = async (data: any) => {
+        setInvoices([]);
+        setNewProgress(0);
+        startLoading();
+        setViewRecap(false);
+ 
+        try {
+            const file = data.file[0];
+            fileExtensionSchema.parse(file.name);
+            const jsonData = await readFile(file);
+            // await fetchInvoices(jsonData);
+            await fetchData(jsonData);
+        } catch (error) {
+            toast.error("Something went wrong"); // Handle errors from file reading or validation
+        } finally {
+            reset();
+            stopLoading();
+        }
+    };
+
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className='mb-4'>
-                    <Label>Upload a file</Label>
-                    <Input
-                    className='mt-2'
-                        type="file"
-                        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
-                        {...register('file', { required: true })}
-                    />
-                </div>
+        <>
+            <ConfirmationDialog />
+            <div>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className='mb-4'>
+                        <Label>{label}</Label>
+                        <Input
+                            placeholder={placeholder}
+                            className='mt-2'
+                            type="file"
+                            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
+                            {...register('file', { required: true })}
+                        />
+                    </div>
 
-                <Button
-                    type="submit"
-                    className="w-full mt-4"
-                    disabled={disabled}
-                >
-                    {disabled ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Add to ACI invoices list"}
-                </Button>
-            </form>
-
-            {excelData.length > 0 && (
-                <div>
-                    <h2>Validated Excel Data:</h2>
-                    <pre>{JSON.stringify(excelData, null, 2)}</pre>
-                </div>
-            )}
-        </div>
+                    <Button
+                        type="submit"
+                        className="w-full mt-4"
+                        disabled={loading}
+                    >
+                        {loading ? (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) : "Add to ACI invoices list"}
+                    </Button>
+                </form>
+            </div>
+        </>
     )
 }
