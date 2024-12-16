@@ -29,7 +29,7 @@ type ExcelData = z.infer<typeof excelSchema>;
 const fileExtensionSchema = z.string().refine(
     (value) => {
         const extension = value.split('.').pop();
-        return extension === 'xlsx' || extension === 'csv';
+        return extension === 'xlsx'  || extension === 'xls' || extension === 'csv';
     },
     'Invalid file type. Please upload an Excel or CSV file.'
 );
@@ -81,29 +81,64 @@ export const SearchByFileForm = ({
         return nvlObj;
     }
 
+    // const readFile = (file: File) => {
+    //     return new Promise<any[]>((resolve, reject) => {
+    //         const reader = new FileReader();
+    //         reader.onload = (e) => {
+               
+    //             const workbook = XLSX.read(e.target?.result, { type: 'binary' });
+    //             console.log("workbook",workbook);
+    //             const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    //             const headers: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
+
+    //             const GoodHeaderFormat = ["NUMACI", "ID", "PK_BILL_GENERATED_ID", "DUE_AMT"];
+    //             if (GoodHeaderFormat.length === headers.length && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
+    //                 const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
+    //                 const cleanData = jsonData.map(cleanJsonData)
+    //                 resolve(cleanData);
+    //             } else {
+    //                 setMessage("Headers are in the wrong format, please use the template. Expected: NUMACI, ID, PK_BILL_GENERATED_ID, DUE_AMT");
+    //                 confirm();
+    //                 reject(new Error("Invalid header format"));
+    //             }
+    //         };
+    //         reader.onerror = (error) => reject(error);
+    //         reader.readAsBinaryString(file);
+    //     });
+    // };
+
     const readFile = (file: File) => {
         return new Promise<any[]>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const workbook = XLSX.read(e.target?.result, { type: 'binary' });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const headers: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
-
-                const GoodHeaderFormat = ["NUMACI", "ID", "PK_BILL_GENERATED_ID", "DUE_AMT"];
-                if (GoodHeaderFormat.length === headers.length && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
-                    const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
-                    const cleanData = jsonData.map(cleanJsonData)
-                    resolve(cleanData);
-                } else {
-                    setMessage("Headers are in the wrong format, please use the template. Expected: NUMACI, ID, PK_BILL_GENERATED_ID, DUE_AMT");
-                    confirm();
-                    reject(new Error("Invalid header format"));
+                try {
+                    // Read the file based on its type
+                    const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                    const workbook = XLSX.read(data, { type: 'array' });
+    
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const headers: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
+    
+                    const GoodHeaderFormat = ["NUMACI", "ID", "PK_BILL_GENERATED_ID", "DUE_AMT"];
+                    if (GoodHeaderFormat.length === headers.length && headers.every((val: string, index: number) => val === GoodHeaderFormat[index])) {
+                        const jsonData = XLSX.utils.sheet_to_json<ExcelData>(worksheet);
+                        const cleanData = jsonData.map(cleanJsonData);
+                        resolve(cleanData);
+                    } else {
+                        setMessage("Headers are in the wrong format, please use the template. Expected: NUMACI, ID, PK_BILL_GENERATED_ID, DUE_AMT");
+                        confirm();
+                        reject(new Error("Invalid header format"));
+                    }
+                } catch (error:any) {
+                    reject(new Error("Error reading the file: " + error?.message));
                 }
             };
+    
             reader.onerror = (error) => reject(error);
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file); // Change to readAsArrayBuffer for better compatibility
         });
     };
+
 
     const fetchData = async (items: any[]) => {
         const validationErrors = validateNumaci(items, reference);
@@ -122,7 +157,6 @@ export const SearchByFileForm = ({
             const promises = chunk.map(async (invoice: { PK_BILL_GENERATED_ID: any; ID: any; DUE_AMT: any; }) => {
                 const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
                 const goodData = response.data.bills ?? [];
-                console.log(goodData[0]);
                 return [
                     goodData.length > 0 ? goodData[0][0] : "",
                     invoice.ID,
@@ -162,8 +196,8 @@ export const SearchByFileForm = ({
             const jsonData = await readFile(file);
             // await fetchInvoices(jsonData);
             await fetchData(jsonData);
-        } catch (error) {
-            toast.error("Something went wrong"); // Handle errors from file reading or validation
+        } catch (error:any) {
+            toast.error(error.message); // Handle errors from file reading or validation
         } finally {
             reset();
             stopLoading();

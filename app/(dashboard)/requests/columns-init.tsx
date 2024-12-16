@@ -26,6 +26,7 @@ interface ResponseType {
   payment_mode: string;
   status: string;
   categoryId: string;
+  isReceiptReady:boolean;
 }
 
 export const columnsInit: ColumnDef<ResponseType>[] = [
@@ -152,7 +153,7 @@ export const columnsInit: ColumnDef<ResponseType>[] = [
           row.original.status === status[5]
           || row.original.status === status[7]
           || row.original.status === status[8]
-        ) && <ActionsInvoicesAdd id={row.original.id} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.status === status[8]} />
+        ) && <ActionsInvoicesAdd id={row.original.id} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.isReceiptReady} />
     },
     enableSorting: false,
   },

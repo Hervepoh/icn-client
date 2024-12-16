@@ -30,14 +30,16 @@ type Props = {
         name: string;
         value: number;
     }[];
+    defaultValue?:string;
 }
 
 export const Pie = ({
     title,
-    data = []
+    data = [],
+    defaultValue
 }: Props) => {
 
-    const [chartType, setChartType] = useState("pie");
+    const [chartType, setChartType] = useState(defaultValue || "pie");
 
     const onTypeChange = (type: string) => {
         // TODO: Add Paywall

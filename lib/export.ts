@@ -130,10 +130,10 @@ export const exportToExcel = async (id: string) => {
 
   // Prepare data data.status != 9 ? [] : 
   const allData = [
-    ['Payment Date', '', formatDate(data.paymentDate, 'dd/MM/yyyy')],
-    ['Number of Bills', '', data.numberOfBills.toLocaleString()],
-    ['Total Amount', '', data.totalAmount.toLocaleString()],
-    ['Customer/Regroup Name', '', data.customerName],
+    ['Payment Date', '', formatDate(data?.paymentDate || new Date(), 'dd/MM/yyyy')],
+    ['Number of Bills', '', data?.numberOfBills?.toLocaleString()],
+    ['Total Amount', '', data?.totalAmount?.toLocaleString()],
+    ['Customer/Regroup Name', '', data?.customerName],
     [''],
     ['Transaction', 'Contract', 'Customer', 'Bill Number', 'Date', 'Voltage Type', 'Paid Amount', 'Advance Payment'],
     ...data.transactions.map((t: { transaction_id: any; bill_account_number: any; customerName: any; bill_number: any; billingDate: any; voltageType: any; paid_amount: any; advancePayment: any; }) => [
@@ -222,5 +222,5 @@ export const exportToExcel = async (id: string) => {
 
   // Add worksheet to workbook and save
   XLSX.utils.book_append_sheet(wb, ws, 'Billing ');
-  XLSX.writeFile(wb, `receipt-${id}.xlsx`);
+  XLSX.writeFile(wb, `RECU_ACI_NUMERO_${data?.reference}.xlsx`);
 };

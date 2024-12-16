@@ -20,6 +20,7 @@ import { useUserStore } from '@/features/users/hooks/use-user-store';
 import { useAuthLogout } from '@/features/users/api/use-auth-logout';
 import { useAuthMe } from '@/features/users/api/use-auth-me';
 import { useState } from 'react';
+import Link from 'next/link';
 
 
 export function UserNav() {
@@ -73,10 +74,11 @@ export function UserNav() {
             Role : {user.role.name}
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          {/* <DropdownMenuItem>
-            <Link href={"/profile"}>Settings</Link>
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem> */}
+          {user?.role?.name.toUpperCase() === 'ADMIN' &&
+            <Link href={"/users"}><DropdownMenuItem>
+              adminsitration space
+              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            </DropdownMenuItem></Link>}
           {/* <DropdownMenuItem>New Team</DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

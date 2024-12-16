@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
     const [pagination, setPagination] = React.useState({
         pageIndex: 0, //initial page index
         pageSize: 10000, //default page size
-      });
+    });
 
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
@@ -91,7 +91,7 @@ export function DataTable<TData, TValue>({
     return (
         <div>
             <ConfirmationDialog />
-            <div className="flex items-center py-4">
+            <div className="flex items-center flex-row-reverse justify-between py-4">
                 <div className="flex items-center gap-x-3">
                     <Input
                         placeholder={`Filter name...`}
@@ -101,6 +101,8 @@ export function DataTable<TData, TValue>({
                         }
                         className="max-w-sm"
                     />
+
+
                     {/* <Input
                         placeholder={`Filter amount...`}
                         value={(table.getColumn("5")?.getFilterValue() as string) ?? ""}
@@ -109,31 +111,31 @@ export function DataTable<TData, TValue>({
                         }
                         className="max-w-sm"
                     /> */}
-                 
+
                 </div>
+                <div>
+                    {
+                        table.getFilteredSelectedRowModel().rows.length > 0 && (
+                            <Button
+                                onClick={async () => {
+                                    const ok = await confirm();
+                                    if (ok) {
+                                        onSubmit(table.getFilteredSelectedRowModel().rows);
+                                        table.resetRowSelection();
+                                    }
 
-                {
-                    table.getFilteredSelectedRowModel().rows.length > 0 && (
-                        <Button
-                            onClick={async () => {
-                                const ok = await confirm();
-                                if (ok) {
-                                    onSubmit(table.getFilteredSelectedRowModel().rows);
-                                    table.resetRowSelection();
-                                }
-
-                            }}
-                            disabled={disabled}
-                            size="sm"
-                            variant="default"
-                            className="ml-auto font-normal text-xs"
-                        >
-                            <PlusCircle className="size-4 mr-2" />
-                            Add to Cart ({table.getFilteredSelectedRowModel().rows.length})
-                        </Button>
-                    )
-                }
-
+                                }}
+                                disabled={disabled}
+                                size="sm"
+                                variant="default"
+                                className="ml-auto font-normal text-xs"
+                            >
+                                <PlusCircle className="size-4 mr-2" />
+                                Add to Cart ({table.getFilteredSelectedRowModel().rows.length})
+                            </Button>
+                        )
+                    }
+                </div>
             </div>
             <div className="rounded-md border">
                 <Table>

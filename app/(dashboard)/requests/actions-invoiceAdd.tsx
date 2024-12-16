@@ -73,7 +73,6 @@ export const ActionsInvoicesAdd = ({ id, exportable, show }: Props) => {
     }
 
     if (user && hasPermission(user, "TRANSACTIONDETAIL-READ")) {
-        console.log("ok");
         return (
             <>
                 <ConfirmationDialog />
@@ -91,20 +90,21 @@ export const ActionsInvoicesAdd = ({ id, exportable, show }: Props) => {
                             <Send className="mr-2 size-4" />
                             <span>View</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
+                        
+                        {/* <DropdownMenuItem
                             disabled={!exportable}
                             onClick={() => exportToPDF(id)}
                         >
                             <FileText className="mr-2 size-4" />
                             <span>Generate Receipt PDF</span>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
 
                         <DropdownMenuItem
                             disabled={!exportable}
-                            onClick={() => exportToExcel(id)}
+                            onClick={() => exportable && exportToExcel(id)}
                         >
                             <FileSpreadsheet className="mr-2 size-4" />
-                            <span>Generate Receipt Excel</span>
+                            <span>Generate Receipt</span>
                         </DropdownMenuItem>
 
                     </DropdownMenuContent>

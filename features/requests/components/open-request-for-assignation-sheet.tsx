@@ -25,7 +25,7 @@ export function OpenRequestForAssignationSheet() {
     const { isOpen, onClose, id } = useOpenRequestAssignation();
     const [ConfirmationDialog, confirm] = useConfirm({
         title: "Are you sure?",
-        message: "You are about to assign to a key account manager this transaction , Are you sure you want to perform this action?",
+        message: "You are about to assign this transaction to a region/unit. Are you sure you want to perform this action?",
     });
 
     const regionsQuery = useGetRegions();

@@ -12,12 +12,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { DataTableReadOnly } from '@/components/data-table-readonly';
 import { columns } from './columns';
+import { BiExport } from 'react-icons/bi';
+import { useBrouillard } from '@/features/requests/hooks/use-brouillard';
+import { Button } from '@/components/ui/button';
 
 
 type Props = {}
 
 export default function TransactionsPage(props: Props) {
 
+    const brouillard = useBrouillard();
     const getTransactionsQuery = useGetRequests(); //useGetRequests("?status=validated");
 
     const isDisabled = getTransactionsQuery.isLoading
@@ -45,8 +49,15 @@ export default function TransactionsPage(props: Props) {
             <Card className='border-none drop-shadow-sm'>
                 <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
                     <CardTitle className='text-xl line-clamp-1'>ALL TRANSACTIONS </CardTitle>
+                    <Button
+                        onClick={brouillard.onOpen}
+                        className='w-full lg:w-auto'>
+                        <BiExport className='size-4 mr-2' />
+                        Generated Brouillard
+                    </Button>
                 </CardHeader>
                 <CardContent>
+                    
                     <DataTableReadOnly
                         columns={columns}
                         data={transactionsfiltered}

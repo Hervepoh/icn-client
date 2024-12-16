@@ -29,6 +29,7 @@ interface ResponseType {
   categoryId: string;
   unit: string;
   isUserAuthorizedForAction: boolean;
+  isReceiptReady:boolean;
 }
 
 export const columnsRegion: ColumnDef<ResponseType>[] = [
@@ -160,7 +161,7 @@ export const columnsRegion: ColumnDef<ResponseType>[] = [
           || row.original.status === status[7]
           || row.original.status === status[8]
         )
-      ) && <ActionsInvoicesAdd id={row.original.id} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.status === status[8]} />
+      ) && <ActionsInvoicesAdd id={row.original.id} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.isReceiptReady} />
     },
     enableSorting: false,
   },

@@ -47,6 +47,7 @@ export const DataCharts = ({ data, isLoading }: DataType) => {
           <Pie
             title={"By regions"}
             data={data?.regions ?? []}
+            defaultValue={"radar"}
           />
         </div>
         <div className="col-span-1 lg:col-span-3 xl:col-span-4">

@@ -100,7 +100,7 @@ export const LoginForm = (props: Props) => {
                     <Input
                       {...field}
                       type="email"
-                      placeholder="johndoe@genius.com"
+                      placeholder="herve.ngando@eneo.cm"
                       disabled={isPending}
                     />
                   </FormControl>

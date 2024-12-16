@@ -201,7 +201,7 @@ export default function TransactionsDetails() {
                 } else {
                     const ok = await confirm();
                     if (ok) {
-                        console.log("Use is inform")
+                        console.log("User is inform")
                         setOnSubmit(false);
                     }
                 }
@@ -304,109 +304,111 @@ export default function TransactionsDetails() {
             <ConfirmationDialog />
             <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
                 <div className="grid grid-cols-1 lg:grid-cols-5 md:gap-8 pb-2 mb-8">
-                    <Card className='border-none drop-shadow-sm '>
-                        <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
-                            <button
-                                className='w-full flex justify-between items-start'
-                                onClick={() => view === "upload" ? setView("search") : (setView("upload"), setViewRecap(true))}
-                            >
-                                <div>
-                                    <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
-                                    <CardDescription>Unpaid bill</CardDescription>
-                                </div>
-                                <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
-                                    {view === "upload" ?
-                                        <BiSearch size={48} className="sm:w-15" onClick={() => setView("search")} />
-                                        : <BiPlusCircle size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
-                                </div>
-                            </button>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                {
-                                    view === "search" && (
-                                        <div className="flex flex-col gap-y-2">
-                                            <SearchByFileForm
-                                                key="file"
-                                                label="Upload a file"
-                                                setInvoices={setInvoices}
-                                                setViewRecap={setViewRecap}
-                                                setNewProgress={setNewProgress}
-                                                reference={data?.reference}
-                                            />
+                    {data?.statusId == 6 &&
+                        <Card className='border-none drop-shadow-sm '>
+                            <CardHeader className='gap-y-2 flex-row lg:items-center justify-between'>
+                                <button
+                                    className='w-full flex justify-between items-start'
+                                    onClick={() => view === "upload" ? setView("search") : (setView("upload"), setViewRecap(true))}
+                                >
+                                    <div>
+                                        <CardTitle className='text-2xl line-clamp-1'>{view === "upload" ? "Add" : "Search"}  ...</CardTitle>
+                                        <CardDescription>Unpaid bill</CardDescription>
+                                    </div>
+                                    <div className='flex flex-col lg:flex-row items-center gap-x-2 gap-y-2'>
+                                        {view === "upload" ?
+                                            <BiSearch size={48} className="sm:w-15" onClick={() => setView("search")} />
+                                            : <BiPlusCircle size={48} className="sm:w-15" onClick={() => { setView("upload"); setViewRecap(true); }} />}
+                                    </div>
+                                </button>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    {
+                                        view === "search" && (
+                                            <div className="flex flex-col gap-y-2">
+                                                <SearchByFileForm
+                                                    key="file"
+                                                    label="Upload a file"
+                                                    setInvoices={setInvoices}
+                                                    setViewRecap={setViewRecap}
+                                                    setNewProgress={setNewProgress}
+                                                    reference={data?.reference}
+                                                />
 
 
-                                            <div ref={selectRef} className={cn("space-y-2", "my-5")}>
-                                                <Label>Criteria</Label>
-                                                <Select value={selectedOption} onValueChange={handleOptionChange}>
-                                                    <SelectTrigger className="" >
-                                                        <SelectValue placeholder="Select a criteria" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="regroup">Regroupment code</SelectItem>
-                                                        <SelectItem value="contract">Contract number</SelectItem>
-                                                        <SelectItem value="invoice">Bill number</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                                <div ref={selectRef} className={cn("space-y-2", "my-5")}>
+                                                    <Label>Criteria</Label>
+                                                    <Select value={selectedOption} onValueChange={handleOptionChange}>
+                                                        <SelectTrigger className="" >
+                                                            <SelectValue placeholder="Select a criteria" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="regroup">Regroupment code</SelectItem>
+                                                            <SelectItem value="contract">Contract number</SelectItem>
+                                                            <SelectItem value="invoice">Bill number</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
                                             </div>
+                                        )
+                                    }
 
-                                        </div>
-                                    )
-                                }
+                                    {
+                                        view === "search" &&
+                                        selectedOption === 'regroup' &&
+                                        <SearchByRegroupForm
+                                            key="regroup"
+                                            label="Regroup number"
+                                            placeholder="value"
+                                            setInvoices={setInvoices}
+                                            setViewRecap={setViewRecap}
+                                            setNewProgress={setNewProgress}
+                                        />
+                                    }
+                                    {
+                                        view === "search" &&
+                                        selectedOption === 'contract' &&
+                                        <SearchByContractForm
+                                            key="contract"
+                                            label="Contract number"
+                                            placeholder="value"
+                                            setInvoices={setInvoices}
+                                            setViewRecap={setViewRecap}
+                                            setNewProgress={setNewProgress}
+                                        />
+                                    }
+                                    {
+                                        view === "search" &&
+                                        selectedOption === 'invoice' &&
+                                        <SearchByInvoiceForm
+                                            key="invoice"
+                                            label="Invoice number"
+                                            placeholder="value"
+                                            setInvoices={setInvoices}
+                                            setNewProgress={setNewProgress}
+                                            setViewRecap={setViewRecap}
+                                        />
+                                    }
+                                    {
+                                        view === "upload" &&
+                                        <SearchByFileForm
+                                            key="file"
+                                            label="Upload a file"
+                                            setInvoices={setInvoices}
+                                            setViewRecap={setViewRecap}
+                                            setNewProgress={setNewProgress}
+                                            reference={data?.reference}
+                                        />
+                                    }
 
-                                {
-                                    view === "search" &&
-                                    selectedOption === 'regroup' &&
-                                    <SearchByRegroupForm
-                                        key="regroup"
-                                        label="Regroup number"
-                                        placeholder="value"
-                                        setInvoices={setInvoices}
-                                        setViewRecap={setViewRecap}
-                                        setNewProgress={setNewProgress}
-                                    />
-                                }
-                                {
-                                    view === "search" &&
-                                    selectedOption === 'contract' &&
-                                    <SearchByContractForm
-                                        key="contract"
-                                        label="Contract number"
-                                        placeholder="value"
-                                        setInvoices={setInvoices}
-                                        setViewRecap={setViewRecap}
-                                        setNewProgress={setNewProgress}
-                                    />
-                                }
-                                {
-                                    view === "search" &&
-                                    selectedOption === 'invoice' &&
-                                    <SearchByInvoiceForm
-                                        key="invoice"
-                                        label="Invoice number"
-                                        placeholder="value"
-                                        setInvoices={setInvoices}
-                                        setNewProgress={setNewProgress}
-                                        setViewRecap={setViewRecap}
-                                    />
-                                }
-                                {
-                                    view === "upload" &&
-                                    <SearchByFileForm
-                                        key="file"
-                                        label="Upload a file"
-                                        setInvoices={setInvoices}
-                                        setViewRecap={setViewRecap}
-                                        setNewProgress={setNewProgress}
-                                        reference={data?.reference}
-                                    />
-                                }
+                                </div>
 
-                            </div>
-
-                        </CardContent>
-                    </Card>
-                    <Card className='border-none drop-shadow-sm col-span-4'>
+                            </CardContent>
+                        </Card>
+                    }
+                    <Card className={ cn('border-none drop-shadow-sm', data?.statusId == 6 ? 'col-span-4':'col-span-5') }>
                         <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
                             <div className='space-y-2'>
                                 <CardTitle className="text-2xl line-clamp-1">
@@ -446,8 +448,8 @@ export default function TransactionsDetails() {
                                                 <div className="flex justify-between">
                                                     <div>Number of invoices :  <span className="font-bold text-md">{` `}{finalData.length.toString().padStart(2, '0')}</span></div>
                                                     <div className="flex gap-3">
-                                                        Active : <span className="font-bold text-md">{finalData.filter((row) => row.selected).length.toString().padStart(2, '0')}</span>
-                                                        Inactive : <span className="font-bold text-md">{finalData.filter((row) => !row.selected).length.toString().padStart(2, '0')}</span>
+                                                        Selected : <span className="font-bold text-md">{finalData.filter((row) => row.selected).length.toString().padStart(2, '0')}</span>
+                                                        UnSelected : <span className="font-bold text-md">{finalData.filter((row) => !row.selected).length.toString().padStart(2, '0')}</span>
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-between">
