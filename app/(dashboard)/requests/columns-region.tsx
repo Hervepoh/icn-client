@@ -161,7 +161,7 @@ export const columnsRegion: ColumnDef<ResponseType>[] = [
           || row.original.status === status[7]
           || row.original.status === status[8]
         )
-      ) && <ActionsInvoicesAdd id={row.original.id} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.isReceiptReady} />
+      ) && <ActionsInvoicesAdd id={row.original.id}  statusTransaction={row.original.status} show={row.original.status === status[7] || row.original.status === status[8]} exportable={row.original.isReceiptReady} />
     },
     enableSorting: false,
   },

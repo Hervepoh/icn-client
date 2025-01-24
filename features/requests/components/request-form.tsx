@@ -29,9 +29,11 @@ const formSchema = z.object({
     payment_date: z.coerce.date(),
     payment_mode: z.string(),
     bank: z.string(),
+    branch: z.string().min(1, "You must select a bank branch."),
     amount: z.string(),
     description: z.string().nullable().optional(),
     //evidence : z.instanceof(FileList).optional(),
+   
 });
 
 // const apiSchema = insertTransactionsSchema.omit({
@@ -52,6 +54,7 @@ type Props = {
     onDelete?: () => void;
     disabled?: boolean;
     bankOptions: { label: string; value: string }[];
+    branchOptions: { label: string; value: string, bankId: string; }[];
     payModeOptions: { label: string; value: string }[];
     onCreateBank: (name: string) => void;
     onCreatePayMode: (name: string) => void;
@@ -66,6 +69,7 @@ export const RequestForm = (
         onDelete,
         disabled,
         bankOptions,
+        branchOptions,
         payModeOptions,
         onCreateBank,
         onCreatePayMode,
@@ -76,6 +80,12 @@ export const RequestForm = (
         resolver: zodResolver(formSchema),
         defaultValues: defaultValues,
     });
+
+    const { watch, setValue } = form;
+    const selectedBankId = watch("bank");
+
+    // Filtrer les agence selon la banque sélectionnée
+    const filteredBranchOptions = branchOptions.filter(branch => branch.bankId === selectedBankId);
 
     const handleSubmit = (values: FormValues) => {
         const amount = parseFloat(values.amount);
@@ -186,8 +196,33 @@ export const RequestForm = (
                                     options={bankOptions}
                                     onCreate={onCreateBank}
                                     value={field.value}
-                                    onChange={field.onChange}
+                                    // onChange={field.onChange}
+                                    onChange={(value) => {
+                                        field.onChange(value);
+                                        setValue("branch", ''); // Réinitialiser l'unité sélectionnée
+                                    }}
                                     disabled={disabled}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="branch"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Bank branch</FormLabel>
+                            <FormControl>
+                                <Select
+                                    placeholder='Select an bank branch'
+                                    options={filteredBranchOptions}
+                                    onCreate={() => ''}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    disabled={disabled || !selectedBankId}
                                 />
                             </FormControl>
                             <FormMessage />

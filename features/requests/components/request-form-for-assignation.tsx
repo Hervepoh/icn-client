@@ -2,8 +2,9 @@
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-
 import { Loader2 } from 'lucide-react';
+import { MdPeople } from "react-icons/md";
+
 import {
     Form,
     FormControl,
@@ -17,18 +18,21 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from '@/components/date-picker';
 import { AmountInput } from '@/components/amount-input';
-import { MdPeople } from "react-icons/md";
 
-
+// Define the validation schema for the form using zod 
 const vInput = {
     name: z.string(),
     amount: z.string(),
     bank: z.string(),
+    branch: z.string().optional(),
+    town: z.string().optional(),
     payment_date: z.coerce.date(),
     payment_mode: z.string(),
 }
 
 const defaultSchema = z.object(vInput);
+
+// Define the validation schema for the form using zod 
 const formSchema = z.object({
     ...vInput,
     regionId: z.string().min(1, "You need to select a key account manager"),
@@ -142,6 +146,7 @@ export const RequestFormForAssignation = (
                                 />
                             </div>
                         </div>
+
                         <div className='flex gap-5'>
                             <div className='flex-1'>
                                 <FormField
@@ -169,6 +174,46 @@ export const RequestFormForAssignation = (
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Bank</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    disabled={true}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='flex gap-5'>
+                            <div className='flex-1'>
+                                <FormField
+                                    control={form.control}
+                                    name="branch"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Branch</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    disabled={true}
+                                                    placeholder="Branch Name"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <div className='flex-1'>
+                                <FormField
+                                    control={form.control}
+                                    name="town"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Town</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     disabled={true}

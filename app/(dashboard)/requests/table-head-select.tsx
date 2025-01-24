@@ -19,6 +19,7 @@ const options = [
     "amount",
     "payment_date",
     "bank",
+    "branch",
     "mode"
 ]
 

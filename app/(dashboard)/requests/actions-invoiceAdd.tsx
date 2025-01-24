@@ -20,15 +20,17 @@ import { useTransactionStore } from '@/features/requests/hooks/use-lockTransacti
 import { hasPermission } from '@/lib/utils';
 import { useAlert } from '@/hooks/use-alert';
 import { exportToExcel, exportToPDF } from '@/lib/export';
+import { status } from '@/config/status.config';
 
 
 type Props = {
     id: string;
     show: boolean;
     exportable: boolean;
+    statusTransaction: string;
 }
 
-export const ActionsInvoicesAdd = ({ id, exportable, show }: Props) => {
+export const ActionsInvoicesAdd = ({ id, statusTransaction,  exportable, show }: Props) => {
     const router = useRouter();
     const { user } = useUserStore();
     const { lock } = useTransactionStore();
@@ -116,7 +118,7 @@ export const ActionsInvoicesAdd = ({ id, exportable, show }: Props) => {
                     >
                         {disabled ?
                             (<><Loader2 className='animate-spin size-4 mr-2' /> Loading</>) :
-                            (<span className='flex'><BiSolidEdit className="mr-2 size-4" />Add Invoices</span>)
+                            (<span className='flex'><BiSolidEdit className="mr-2 size-4" /> { statusTransaction === status[6] ? "Check": "Add Invoices"}</span>)
                         }
                     </Button>
                 )}

@@ -24,17 +24,20 @@ const vInput = {
     name: z.string(),
     amount: z.string(),
     bank: z.string(),
+    branch: z.string(),
+    town: z.string(),
+    advice: z.boolean(),
     payment_date: z.coerce.date(),
     payment_mode: z.string(),
 }
 
 const defaultSchema = z.object(vInput);
 const formSchema = z.object({
-   ...vInput,
+    ...vInput,
     reasonForRefusal: z.string().min(1, "Reason of reject id required"),
     //evidence : z.instanceof(FileList).optional(),
 });
-const apiSchema: any = {}  
+const apiSchema: any = {}
 
 type DefaultValues = z.input<typeof defaultSchema>;
 type FormValues = z.input<typeof formSchema>;
@@ -71,7 +74,7 @@ export const RequestFormForValidation = (
 
     return (
         <Form {...form}>
-            <div className="flex items-start justify-center min-h-screen space-x-4"> 
+            <div className="flex items-start justify-center min-h-screen space-x-4">
                 <div className="w-2/3 gap-5 mt-10">
                     <form
                         onSubmit={form.handleSubmit(handleSubmit)}
@@ -94,7 +97,7 @@ export const RequestFormForValidation = (
                                 </FormItem>
                             )}
                         />
-                        <div className='flex gap-5'> 
+                        <div className='flex gap-5'>
                             <div className='flex-1'>
                                 <FormField
                                     control={form.control}
@@ -174,6 +177,46 @@ export const RequestFormForValidation = (
                             </div>
                         </div>
 
+                        <div className='flex gap-5'>
+                            <div className='flex-1'>
+                                <FormField
+                                    control={form.control}
+                                    name="branch"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Branch</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    disabled={true}
+                                                    placeholder="Branch Name"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <div className='flex-1'>
+                                <FormField
+                                    control={form.control}
+                                    name="town"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Town</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    disabled={true}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
                         <div className='mb-10'>
                             <FormField
                                 control={form.control}
@@ -192,6 +235,18 @@ export const RequestFormForValidation = (
                                 )}
                             />
                         </div>
+
+                        {
+                            !!defaultValues?.advice
+                            && (
+                                <div className="mb-4 p-4 bg-blue-100 border border-red-400 rounded-lg">
+                                    <div className="font-semibold" style={ {color: "red"} }>Important:</div>
+                                    <p className="mt-1">
+                                        This transaction matches an existing entry in our system.
+                                    </p>
+                                </div>
+                            )
+                        }
 
 
                         <div className="py-10">

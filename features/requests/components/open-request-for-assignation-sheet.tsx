@@ -1,6 +1,5 @@
-import { z } from "zod";
-
 import { Loader2 } from "lucide-react";
+
 import {
     Sheet,
     SheetContent,
@@ -11,7 +10,6 @@ import {
 
 import { useConfirm } from "@/hooks/use-confirm";
 // import { useGetCommercialUsers } from "@/features/users/api/use-get-commercial-users";
-// import { useGetSegments } from "@/features/segments/api/use-get-segments";
 import { useGetRegions } from "@/features/regions/api/use-get-regions";
 import { useGetUnits } from "@/features/unit/api/use-get-units";
 import { useGetRequest } from "@/features/requests/api/use-get-request";
@@ -52,6 +50,7 @@ export function OpenRequestForAssignationSheet() {
     //         value: item.id
     //     })
     // );
+
     const transactionQuery = useGetRequest(id);
     const editMutation = useEditRequest(id);
 
@@ -59,27 +58,35 @@ export function OpenRequestForAssignationSheet() {
     const isLoading = transactionQuery.isLoading
         // || usersQuery.isLoading
         || regionsQuery.isLoading
+        || unitsQuery.isLoading
         ;
 
     const defaultValues = transactionQuery.data
         ? {
             name: transactionQuery.data.name,
             amount: transactionQuery.data.amount?.toString(),
-            bank: transactionQuery.data.bank?.name,
+            bank: transactionQuery.data.bank,
+            branch: transactionQuery.data.branch,
+            town: transactionQuery.data.town,
+            advice: transactionQuery.data.advice_duplication,
             payment_date: transactionQuery.data.paymentDate
                 ? new Date(transactionQuery.data.paymentDate)
                 : new Date(),
-            payment_mode: transactionQuery.data.paymentMode?.name,
+            payment_mode: transactionQuery.data.paymentMode,
         }
         : {
             name: "",
             amount: "",
             bank: "",
+            branch: "",
+            town: "",
+            advice: false,
             payment_date: new Date(),
             payment_mode: "",
         };
 
     const onAssign = async (value: { regionId: string; unitId?: string }) => {
+
         const ok = await confirm();
         if (ok) {
             editMutation.mutate({

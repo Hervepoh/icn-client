@@ -42,6 +42,7 @@ export function EditUserSheet() {
         ? {
             name: UserQuery.data.name,
             email: UserQuery.data.email,
+            phone: UserQuery.data.phone,
             unitId: UserQuery.data.unitId,
             ldap: UserQuery.data.ldap,
             password: UserQuery.data.password,
@@ -52,6 +53,7 @@ export function EditUserSheet() {
         : {
             name: "",
             email: "",
+            phone: "",
             unitId: "",
             ldap: true,
             password: "",

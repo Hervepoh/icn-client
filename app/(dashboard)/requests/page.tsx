@@ -71,6 +71,7 @@ export default function TransactionsPage(props: Props) {
     let region_id = "";
     let region_name = "";
     let unit_name = "";
+
     // TODO AMELERER POUR RECUPERER DANS USER DIRECTEMENT
     if (user?.unitId) {
         const unit = units.find((unit: { id: string; name: string; region: string, regionId: string }) => unit.id === user.unitId)
@@ -102,7 +103,7 @@ export default function TransactionsPage(props: Props) {
     const onSubmitImport = async (
         values: any[]
     ) => {
-
+        console.log("createTransactionsQuery values",values);
         // const bankId = await confirm();
 
         // if (!bankId) {
@@ -113,6 +114,8 @@ export default function TransactionsPage(props: Props) {
             ...value,
             // bank: bankId as string,
         }))
+
+        console.log("createTransactionsQuery",data);
 
         createTransactionsQuery.mutate(data, {
             onSuccess: () => {
@@ -154,8 +157,10 @@ export default function TransactionsPage(props: Props) {
             </>
         )
     }
-
-    if (!hasPermission(user, "TRANSACTION-VALIDATE", "TRANSACTION-ASSIGN")) {
+    
+    // TODO : refactor this
+    // get all other case to display all transaction
+    if (!hasPermission(user, "TRANSACTION-VALIDATE", "TRANSACTION-ASSIGN" , "TRANSACTION-VERIFIER")) {
         transactions = transactions.filter((transaction: any) => transaction.userId === user.id);
 
         // list of transaction  of the connected user region with the action 
@@ -170,9 +175,15 @@ export default function TransactionsPage(props: Props) {
         // list of transaction of the connected user unit 
         transactions_per_unit = transactions_all.filter((transaction: any) => transaction.unitId === user?.unitId)
     }
+
+    if (hasPermission(user, "TRANSACTION-VERIFIER")) {
+        transactions = transactions.filter((transaction: any) => transaction.statusId == 7)
+    }
+
     if (hasPermission(user, "TRANSACTION-VALIDATE")) {
         transactions = transactions.filter((transaction: any) => transaction.statusId == 3)
     }
+  
     if (hasPermission(user, "TRANSACTION-ASSIGN")) {
         transactions = transactions.filter((transaction: any) => ((transaction.statusId == 4) && (transaction.userId === transaction.createdById)))
     }

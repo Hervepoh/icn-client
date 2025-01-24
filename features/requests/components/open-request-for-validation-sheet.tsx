@@ -34,16 +34,22 @@ export function OpenRequestForValidationSheet() {
         ? {
             name: transactionQuery.data.name,
             amount: transactionQuery.data.amount?.toString(),
-            bank: transactionQuery.data.bank?.name,
+            bank: transactionQuery.data.bank,
+            branch: transactionQuery.data.branch,
+            town: transactionQuery.data.town,
+            advice: transactionQuery.data.advice_duplication,
             payment_date: transactionQuery.data.paymentDate
                 ? new Date(transactionQuery.data.paymentDate)
                 : new Date(),
-            payment_mode: transactionQuery.data.paymentMode?.name,
+            payment_mode: transactionQuery.data.paymentMode,
         }
         : {
             name: "",
             amount: "",
             bank: "",
+            branch: "",
+            town: "",
+            advice: false,
             payment_date: new Date(),
             payment_mode: "",
         };

@@ -157,6 +157,7 @@ export const SearchByFileForm = ({
             const promises = chunk.map(async (invoice: { PK_BILL_GENERATED_ID: any; ID: any; DUE_AMT: any; }) => {
                 const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
                 const goodData = response.data.bills ?? [];
+                console.log("goodData",goodData)
                 return [
                     goodData.length > 0 ? goodData[0][0] : "",
                     invoice.ID,
@@ -165,6 +166,7 @@ export const SearchByFileForm = ({
                     goodData.length > 0 ? goodData[0][4] : "",
                     goodData.length > 0 ? goodData[0][5] : 0,
                     invoice.DUE_AMT,
+                    goodData.length > 0 ? goodData[0][6] : "",
                     goodData.length > 0 ? (invoice.ID !== goodData[0][1] ? "Inconsistency key contract-invoice" : "") : "Invoice not exist"
                 ];
             });

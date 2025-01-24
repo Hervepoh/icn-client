@@ -17,6 +17,7 @@ import { ImportTable } from './import-table';
 import { useGetBanks } from '@/features/banks/api/use-get-banks';
 import { useGetPayModes } from '@/features/payModes/api/use-get-payModes';
 import { toast } from 'sonner';
+import { useGetBranches } from '@/features/bankAgencies/api/use-get-branchs';
 
 
 
@@ -28,6 +29,7 @@ const requredOptions = [
     "amount",
     "payment_date",
     "bank",
+    "branch",
     "mode",
 ];
 
@@ -49,9 +51,11 @@ export const ImportCard = ({
 }: Props) => {
 
     const bankQuery = useGetBanks();
+    const branchQuery = useGetBranches();
     const payModeQuery = useGetPayModes();
 
     const banks = bankQuery.data ?? [];
+    const branches = branchQuery.data ?? [];
     const payModes = payModeQuery.data ?? [];
 
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumnsState>({});
@@ -119,12 +123,14 @@ export const ImportCard = ({
         const formatedData = arrayOfData.map((item) => ({
             ...item,
             bank: getEntityIdByName(item.bank?.trim().toUpperCase(), banks),
+            branch: getEntityIdByName(item.branch?.trim().toUpperCase(), branches),
             mode: getEntityIdByName(item.mode?.trim().toUpperCase(), payModes),
             amount: convertAmountToMilliunits(parseFloat(item.amount)),
             // date: format(parse(item.date, dateFormat, new Date()), outputFormat)
         }));
-        formatedData.pop(); // remove the last element
-
+        // formatedData.pop(); // remove the last element
+          
+        console.log("formatedData",formatedData);
         // Execute validation
         const validationErrors = validateTransactions(formatedData);
         if (validationErrors.length > 0) {
@@ -138,7 +144,7 @@ export const ImportCard = ({
             });
             return; // Stop execution if there are validation errors
         }
-
+         
         // Proceed to submit if validation passes
         onSubmit(formatedData);
     }
@@ -147,6 +153,7 @@ export const ImportCard = ({
         name: string;
         amount: number;
         bank: string;
+        branch: string;
         payment_date: string;
         mode: string;
         pay_mode: string;
@@ -164,6 +171,9 @@ export const ImportCard = ({
             }
             if (!transaction.bank || transaction.bank.trim() === '') {
                 errors.push(`Error: Some provided Bank are not valide please use the correct one`);
+            }
+            if (!transaction.branch || transaction.branch.trim() === '') {
+                errors.push(`Error: Some provided Bank Branch are not valide please use the correct one`);
             }
             if (!transaction.mode || transaction.mode.trim() === '') {
                 errors.push(`Error: Some payment mode are not valide please use the correct one.`);

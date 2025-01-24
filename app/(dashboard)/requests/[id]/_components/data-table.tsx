@@ -52,7 +52,6 @@ export function DataTable<TData, TValue>({
     onSubmit,
     disabled
 }: DataTableProps<TData, TValue>) {
-
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

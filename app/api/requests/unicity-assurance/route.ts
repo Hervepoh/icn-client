@@ -9,13 +9,13 @@ export async function POST(request: NextRequest) {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: `${NEXT_PUBLIC_SERVER_URI}/requests/quality-assurance/${data.id}`,
+            url: `${NEXT_PUBLIC_SERVER_URI}/requests/unicity-assurance`,
             headers: {
                 'Authorization': data.accessToken,
                 'Content-Type': 'application/json',
             },
             data: {
-                type: data.type, // Include the type in the request body
+                ...data.input, // Include the type in the request body
             }
         };
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(resultData.data);
     } catch (error) {
-        console.log("[REQUESTS-QA]", error);
+        console.log("[REQUESTS-UA]", error);
         return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
     }
 }

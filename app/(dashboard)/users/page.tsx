@@ -7,6 +7,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger
+} from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button';
 import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from '@/components/data-table';
@@ -44,30 +50,40 @@ export default function UsersPage(props: Props) {
 
     return (
         <div className='max-w-screen-2xl mx-auto w-full pb-10 -mt-24'>
-            <Card className='border-none drop-shadow-sm'>
-                <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
-                    <CardTitle className='text-xl line-clamp-1'>User management</CardTitle>
-                    {user?.role?.name.toUpperCase() === 'ADMIN' && <Button onClick={newUser.onOpen} size="sm">
-                        <Plus className='size-4 mr-2' />
-                        Add New
-                    </Button>}
+            <Tabs defaultValue="account">
+                <TabsList>
+                    <TabsTrigger value="account">Account</TabsTrigger>
+                    <TabsTrigger value="bank">Bank</TabsTrigger>
+                </TabsList>
+                <TabsContent value="account" >
+                    <Card className='border-none drop-shadow-sm'>
+                        <CardHeader className='gap-y-2 lg:flex-row lg:items-center lg:justify-between'>
+                            <CardTitle className='text-xl line-clamp-1'>User management</CardTitle>
+                            {user?.role?.name.toUpperCase() === 'ADMIN' && <Button onClick={newUser.onOpen} size="sm">
+                                <Plus className='size-4 mr-2' />
+                                Add New
+                            </Button>}
 
-                </CardHeader>
-                <CardContent>
-                    {user?.role?.name.toUpperCase() === 'ADMIN' &&
-                        <DataTable
-                            columns={columns}
-                            data={users}
-                            filterKey='name'
-                            onDelete={(row) => {
-                                // const ids = row.map((r) => r.original.id);
-                                // deleteUsersQuery.mutate({ ids });
-                            }}
-                            disabled={isDisabled}
-                        />
-                    }
-                </CardContent>
-            </Card>
+                        </CardHeader>
+                        <CardContent>
+                            {user?.role?.name.toUpperCase() === 'ADMIN' &&
+                                <DataTable
+                                    columns={columns}
+                                    data={users}
+                                    filterKey='name'
+                                    onDelete={(row) => {
+                                        // const ids = row.map((r) => r.original.id);
+                                        // deleteUsersQuery.mutate({ ids });
+                                    }}
+                                    disabled={isDisabled}
+                                />
+                            }
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="password">Change your password here.</TabsContent>
+            </Tabs>
+
         </div>
     )
 }

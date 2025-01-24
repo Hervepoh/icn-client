@@ -2,40 +2,48 @@ import axios from 'axios';
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from 'js-cookie';
-import { NEXT_PUBLIC_SERVER_URI } from '@/secret';
 
+
+// Define a generic type for the request payload
 type RequestType = any
 
+// Custom hook for editing a request(transaction)
 export const useEditRequest = (id?: string) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient(); // Access the query client for managing cache
 
+  // Define the mutation for editing a request
   const mutation = useMutation<
-    ResponseType,
-    Error,
-    RequestType
+    ResponseType,  // Type of the response from the mutation
+    Error,         // Type of error that may occur
+    RequestType    // Type of the payload sent to the mutation
   >({
+    // Function that handles the mutation
     mutationFn: async (payload) => {
-      // const response = await axios.put(`${NEXT_PUBLIC_SERVER_URI}/requests/${id}`, payload, {
-      //   headers: {
-      //     'Authorization': Cookies.get('access_token')
-      //   },
-      //   withCredentials: true,
-      // });
-      const response = await axios.post('/api/update-request', { enpoint: '/edit-request', id: id, data:payload ,accessToken: Cookies.get('access_token') });
-        return response.data?.data;
+      // Send a POST request to update the request
+      const response = await axios.post('/api/update-request', { 
+        enpoint: '/edit-request',                    // API endpoint for editing the request
+        id: id,                                      // ID of the request being edited
+        data: payload,                               // Payload containing the updated data
+        accessToken: Cookies.get('access_token')     // Access token for authentication
+      });
+
+      // Return the data from the response
+      return response.data?.data;
     },
+     // Callback executed on a successful mutation
     onSuccess: () => {
-      toast.success("Request updated.")
+      toast.success("Request updated.") // Show success message
+      // Invalidate relevant queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["request", { id }] });
       queryClient.invalidateQueries({ queryKey: ["requests?status=validated"] });
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
-
     },
+    // Callback executed on an error during the mutation
     onError: () => {
-      toast.error("Failed to edit request.")
+      toast.error("Failed to edit request.") // Show error message
     },
   });
 
-  return mutation;
+  return mutation; // Return the mutation object for use in components
 };

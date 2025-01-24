@@ -154,13 +154,30 @@ export const columns: ColumnDef<ResponseType>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
+          Status CMS
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+
+
+  {
+    accessorKey: "8",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="-ml-4"
+        >
           Comment
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const comment = row.getValue("7") as Date;
+      const comment = row.getValue("8") as Date;
       return <span className="text-red-500">{`${comment ? comment : ""}`}</span>;
     },
   },

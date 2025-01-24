@@ -45,8 +45,9 @@ export function NewUserSheet() {
                     defaultValues={{
                         name: '',
                         email: '',
+                        phone: '',
                         ldap: true,
-                        roleId: ["f0b4f5d1-5cee-42e5-8731-e6722635af24"],  // fe91303b-9577-4638-aa2a-fd1f8c22b28e is the id of role: USER FOR DEFAULT SELECT USER
+                        roleId: [],  // fe91303b-9577-4638-aa2a-fd1f8c22b28e is the id of role: USER FOR DEFAULT SELECT USER
                         password: '',
                         passwordConfirm: '',
                         unitId:''

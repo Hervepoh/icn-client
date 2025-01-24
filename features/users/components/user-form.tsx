@@ -2,8 +2,8 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { Loader2, Shield, Trash, User, CheckCircle, Briefcase, DollarSign, PowerOff, Power } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
@@ -12,15 +12,20 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Cat, Dog, Fish, Loader2, Rabbit, Shield, Trash, Turtle, User, CheckCircle, Briefcase, DollarSign, PowerOff, Power } from 'lucide-react';
-import { Switch } from "@/components/ui/switch"
 import { Select } from "@/components/select"
-import { useGetUnits } from "@/features/unit/api/use-get-units"
+import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
+import { Button } from "@/components/ui/button"
+
 import { MultiSelect } from "@/components/multi-select"
-import { useGetRoles } from "../api/use-get-roles"
+
+import { useGetRoles } from "@/features/users/api/use-get-roles"
+import { useGetUnits } from "@/features/unit/api/use-get-units"
+
 import { formSchema } from "./user-schema"
 
+
+// Define types based on the validation schema
 type FormValues = z.input<typeof formSchema>;
 
 type Props = {
@@ -46,16 +51,18 @@ export const UserForm = ({
         defaultValues: defaultValues,
     });
 
+    // Fetch units 
     const unitsQuery = useGetUnits();
+
+    // Process unit options
     const unitOptions = (unitsQuery.data ?? []).map((item: { name: any; id: any; regionId: any }) => ({
         label: item.name,
         value: item.id,
         regionId: item.regionId
     }));
 
-    // Définir un type pour les rôles possibles
+    // Define role icons 
     type RoleName = 'ADMIN' | 'VALIDATOR' | 'ASSIGNATOR' | 'MANAGER' | 'COMMERCIAL';
-    // objet mappant chaque rôle à son icône correspondante
     const roleIcons: Record<RoleName, React.FC> = {
         ADMIN: Shield,
         VALIDATOR: CheckCircle,
@@ -64,8 +71,10 @@ export const UserForm = ({
         COMMERCIAL: User,
     };
 
+    // Fetch roles
     const rolesQuery = useGetRoles();
-    // Utilisation des icônes dans le mapping
+
+    // Process roles options
     const rolesOptions = (rolesQuery.data ?? []).map((item: { name: string; id: string }) => {
         // Obtenir l'icône en fonction du nom du rôle, avec une valeur par défaut
         const icon = roleIcons[item.name.toUpperCase() as RoleName] || User; // Utiliser User comme icône par défaut
@@ -76,14 +85,17 @@ export const UserForm = ({
         };
     });
 
+    // Handle form submission
     const handleSubmit = (values: FormValues) => {
         onSubmit(values);
     }
 
+    // Handle actions
     const handleAction = () => {
         onAction?.();
     }
 
+    // Handle deletion
     const handleDelete = () => {
         onDelete?.();
     }
@@ -123,6 +135,25 @@ export const UserForm = ({
                                     type="email"
                                     disabled={disabled}
                                     placeholder="herve.ngando@eneo.cm"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Phone number</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="phone"
+                                    disabled={disabled}
+                                    placeholder="Phone number : +237 699312930"
                                     {...field}
                                 />
                             </FormControl>
@@ -243,7 +274,7 @@ export const UserForm = ({
                         !!id && (<Button
                             type="button"
                             className="w-full"
-                            variant={defaultValues?.deleted ? "success": "destructive"}
+                            variant={defaultValues?.deleted ? "success" : "destructive"}
                             onClick={handleAction}
                             disabled={disabled}
                         >

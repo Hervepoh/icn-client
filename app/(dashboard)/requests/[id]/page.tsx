@@ -4,9 +4,9 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { BiPlusCircle, BiSearch } from "react-icons/bi";
-import { CircleCheckBig, Info, Loader2, Save, ShoppingBag, Trash } from "lucide-react";
+import { CircleCheckBig, CircleOff, Info, Loader2, Save, ShoppingBag, Trash } from "lucide-react";
 
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, hasPermission } from "@/lib/utils";
 import { status } from "@/config/status.config";
 import { useAlert } from '@/hooks/use-alert';
 import { useLoadingStore } from "@/hooks/use-loading-store";
@@ -57,13 +57,15 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { InfoCard } from "@/components/info-card";
 import { LoadingProgress } from "@/components/loading-progress";
 
 import { DataTable } from './_components/data-table';
 import { columns } from "./_components/columns";
 import { LoadingComponent } from "./_components/Loading";
+import { VerifierRejectButton } from "./_components/reject-button";
+import { VerifierValidateButton } from "./_components/validate-button";
+
 import { qa } from "@/lib/qa";
 
 
@@ -78,6 +80,7 @@ export default function TransactionsDetails() {
     const [viewRecap, setViewRecap] = useState<boolean>(false);
     const [newProgress, setNewProgress] = useState(0);
     const [message, setMessage] = useState("");
+    const [messageForVerification, setMessageForVerification] = useState("");
 
     const [invoices, setInvoices] = useState([]);
     const [finalData, setfinalData] = useState<any[]>([]);
@@ -192,7 +195,7 @@ export default function TransactionsDetails() {
                 const qa = await qualityControl()
                 if (qa) {
                     //EndPoint for status change of the request
-                    EditTransactionsQuery.mutate({ status: status[7], userId: user?.id, unitId: user?.unitId }, {
+                    EditTransactionsQuery.mutate({ status: status[6], userId: user?.id, unitId: user?.unitId }, {
                         onSuccess: () => {
                             toast.success('Task Completed')
                             router.push('/requests');
@@ -210,6 +213,79 @@ export default function TransactionsDetails() {
         } catch (error) {
             console.error("An error occurred:", error);
             toast.error('An error occurred while processing your request.');
+        }
+
+    }
+
+    const handleVerifierValidation = async () => {
+        setOnSubmit(true);
+        try {
+            // Check quality_assurance and message if qualityControl failed
+            const QA = await qa(params.id, 'light')
+            if (!QA) {
+                toast.error("Internal server Error"); // Set the message from the response if quality assurance fails
+                return ;
+            }
+
+            if (!QA.quality_assurance) {
+                toast.error(QA.message); // Set the message from the response if quality assurance fails
+                return ;
+            }
+
+            //EndPoint for status change of the request
+            EditTransactionsQuery.mutate({ status: status[7] }, {
+                onSuccess: () => {
+                    toast.success('ACI validated successfully')
+                    router.push('/requests');
+                },
+            });
+
+        } catch (error) {
+            console.error("An error occurred:", error);
+            toast.error('An error occurred while processing your request.');
+        }
+
+    }
+
+    // Function to validate the refusal reason
+    const isValidReason = (reason: string): boolean => {
+        if (!reason) return false; // Check if the reason is empty
+
+        // Remove all spaces and check if the resulting string is empty
+        const trimmedStr = reason.replace(/\s/g, '');
+        return trimmedStr !== "";
+    };
+
+    const handleVerifierRejection = async (reason: string) => {
+        setOnSubmit(true); // Start the submission process
+
+        try {
+            // Validate the refusal reason
+            if (!isValidReason(reason)) {
+                setMessageForVerification('Please provide a valid reason for refusal');
+                setOnSubmit(false); // Stop the submission process
+                return;
+            }
+
+            // Call the API to update the transaction status
+            EditTransactionsQuery.mutate(
+                { status: status[5], verifierReasonForRefusal: reason },
+                {
+                    onSuccess: () => {
+                        toast.success('ACI rejected successfully'); // Success notification
+                        router.push('/requests'); // Redirect to the requests page
+                    },
+                    onError: (error) => {
+                        console.error("An error occurred while updating the transaction:", error);
+                        toast.error('An error occurred while processing your request.'); // Error notification
+                    },
+                }
+            );
+        } catch (error) {
+            console.error("An unexpected error occurred:", error);
+            toast.error('An unexpected error occurred.'); // Unexpected error notification
+        } finally {
+            setOnSubmit(false); // Stop the submission process, whether there was an error or not
         }
 
     }
@@ -298,6 +374,7 @@ export default function TransactionsDetails() {
     if (isLoading) {
         return <LoadingComponent />
     }
+
 
     return (
         <>
@@ -408,7 +485,7 @@ export default function TransactionsDetails() {
                             </CardContent>
                         </Card>
                     }
-                    <Card className={ cn('border-none drop-shadow-sm', data?.statusId == 6 ? 'col-span-4':'col-span-5') }>
+                    <Card className={cn('border-none drop-shadow-sm', data?.statusId == 6 ? 'col-span-4' : 'col-span-5')}>
                         <CardHeader className='flex flex-row items-center justify-between gap-x-4'>
                             <div className='space-y-2'>
                                 <CardTitle className="text-2xl line-clamp-1">
@@ -468,7 +545,7 @@ export default function TransactionsDetails() {
 
                                                 </div>
                                                 {data?.statusId == 6 &&
-                                                    <div className="flex gap-2 flex-col-reverse">
+                                                    <div className="flex gap-2 flex-row">
                                                         <Button
                                                             disabled={disable && onSubmit}
                                                             onClick={() => handleSubmit()}
@@ -482,7 +559,27 @@ export default function TransactionsDetails() {
                                                         </Button>
                                                     </div>
                                                 }
-                                                {data?.statusId != 6 && <div />}
+
+                                                { // btn for verifier validation
+                                                    data?.statusId == 7 && user && hasPermission(user, "TRANSACTION-VERIFIER") &&
+                                                    <div className="flex gap-2 flex-row">
+                                                        <VerifierRejectButton
+                                                            message={messageForVerification}
+                                                            disable={disable}
+                                                            onSubmit={onSubmit}
+                                                            handle={handleVerifierRejection}
+                                                        />
+                                                        <VerifierValidateButton
+                                                            message="Are you sure you want to validate this ACI? This action is irreversible and will initiate the payment process in the CMS"
+                                                            disable={disable}
+                                                            onSubmit={onSubmit}
+                                                            handle={handleVerifierValidation}
+                                                        />
+                                                    </div>
+                                                }
+
+                                                {data?.statusId != 6 && user && !hasPermission(user, "TRANSACTION-VERIFIER") && <div />}
+
 
 
                                             </div>
@@ -607,7 +704,7 @@ export default function TransactionsDetails() {
                                             </div>
                                         </>
                                         :
-                                        <ScrollArea className="flex h-full w-full items-center justify-center rounded-md">
+                                        <div className="flex h-full w-full items-center justify-center rounded-md">
                                             {
                                                 loading ?
                                                     (<Card className='border-none drop-shadow-sm'>
@@ -626,9 +723,15 @@ export default function TransactionsDetails() {
                                                                 data={invoices}
                                                                 filterKey={"3"}
                                                                 onSubmit={(row: any[]) => {
-
-                                                                    // Filter rows where r.original[6] is empty
-                                                                    const filteredData = row.filter((r: any) => !r.original[7]);
+                                
+                                                                    // Filter rows where r.original[7] is empty
+                                                                    const filteredData = row.filter((r: any) => {
+                                                                        const controle = r.original[8];
+                                                                        const statusCMS = r.original[7]?.trim();
+                                                                        
+                                                                        // Return true if r.original[8] is empty and r.original[7] is not 'EC021'
+                                                                        return !r.original[8] && r.original[7]?.trim() !== 'EC021'
+                                                                    });
 
                                                                     // Map the filtered data
                                                                     const data = filteredData.map((r: any) => ({
@@ -662,7 +765,7 @@ export default function TransactionsDetails() {
                                                     )
 
                                             }
-                                        </ScrollArea>
+                                        </div>
                             }
 
                         </CardContent>
