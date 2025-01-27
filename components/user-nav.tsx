@@ -75,8 +75,8 @@ export function UserNav() {
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           {user?.role?.name.toUpperCase() === 'ADMIN' &&
-            <Link href={"/users"}><DropdownMenuItem>
-              adminsitration space
+            <Link href={"/admin"}><DropdownMenuItem>
+              adminsitration
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem></Link>}
           {/* <DropdownMenuItem>New Team</DropdownMenuItem> */}

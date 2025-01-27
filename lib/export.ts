@@ -224,3 +224,22 @@ export const exportToExcel = async (id: string) => {
   XLSX.utils.book_append_sheet(wb, ws, 'Billing ');
   XLSX.writeFile(wb, `RECU_ACI_NUMERO_${data?.reference}.xlsx`);
 };
+
+
+interface ExportData {
+  [key: string]: any;
+}
+
+export const exportToXLSX = async (data: ExportData[], filename: string): Promise<void> => {
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  
+  // Convert data to a worksheet
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  
+  // Append the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, filename);
+
+  // Export the workbook to a file 
+  XLSX.writeFile(workbook, `${filename}.xlsx`);
+};

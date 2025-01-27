@@ -10,7 +10,7 @@ const protectedRoutes = [
     'payModes',
     'banks',
     'categories',
-    'users'
+    'admin'
 ];
 
 export default async function middleware(req: NextRequest) {
@@ -25,7 +25,7 @@ export default async function middleware(req: NextRequest) {
     || /^\/banks$/.test(path) 
     || /^\/categories$/.test(path) 
     || /^\/customers-reference$/.test(path)
-    || /^\/users$/.test(path)
+    || /^\/admin$/.test(path)
     
     const isPublicRoute = publicRoutes.includes(path)
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { FaPiggyBank } from "react-icons/fa";
-import { FaArrowTrendUp, FaArrowTrendDown , FaFlaskVial, FaVialCircleCheck } from "react-icons/fa6";
+import { FaArrowTrendUp, FaArrowTrendDown, FaFlaskVial, FaVialCircleCheck } from "react-icons/fa6";
 import { MdPendingActions } from "react-icons/md";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { DataCard, DataCardLoading } from "@/components/data-card";
@@ -28,7 +28,7 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 pb-2 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-2 mb-8">
       <DataCard
         title={statuses[2].label}
         value={data?.transactions?.nber[statuses[2].value] || 0}
@@ -60,6 +60,15 @@ export const DataGrid = ({ data, isLoading }: DataType) => {
         title={statuses[5].label}
         value={data?.transactions?.nber[statuses[5].value] || 0}
         percentageChange={data?.expensesChange}
+        icon={MdPendingActions}
+        variant="warning"
+        dateRange={data?.dateRangeLabel}
+      />
+
+      <DataCard
+        title={statuses[6].label}
+        value={data?.transactions?.nber[statuses[6].value] || 0}
+        percentageChange={data?.incomeChange}
         icon={MdPendingActions}
         variant="warning"
         dateRange={data?.dateRangeLabel}
