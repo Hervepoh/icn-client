@@ -87,7 +87,6 @@ export const SearchByFileForm = ({
     //         reader.onload = (e) => {
                
     //             const workbook = XLSX.read(e.target?.result, { type: 'binary' });
-    //             console.log("workbook",workbook);
     //             const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     //             const headers: any = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
 
@@ -157,7 +156,6 @@ export const SearchByFileForm = ({
             const promises = chunk.map(async (invoice: { PK_BILL_GENERATED_ID: any; ID: any; DUE_AMT: any; }) => {
                 const response = await axios.post('/api/search', { enpoint: '/search-paid-or-unpaid-by-invoice', values: invoice.PK_BILL_GENERATED_ID, accessToken: Cookies.get('access_token') });
                 const goodData = response.data.bills ?? [];
-                console.log("goodData",goodData)
                 return [
                     goodData.length > 0 ? goodData[0][0] : "",
                     invoice.ID,
@@ -178,7 +176,7 @@ export const SearchByFileForm = ({
                 const newProgress = Math.round(((i+chunk.length)/totalItems) * 100);
                 setNewProgress(newProgress);
             } catch (error) {
-                console.log("FETCH DATA",error);
+                console.error("FETCH DATA",error);
             }
 
             

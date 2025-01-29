@@ -201,7 +201,6 @@ const AuditsCard = () => {
                     isDeletable={true}
                     onDelete={(row) => {
                         const ids = row.map((r) => r.original.id);
-                        console.log("ids", ids)
                         // deleteUsersQuery.mutate({ ids });
                     }}
                 />

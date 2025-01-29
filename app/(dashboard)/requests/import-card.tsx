@@ -130,7 +130,6 @@ export const ImportCard = ({
         }));
         // formatedData.pop(); // remove the last element
           
-        console.log("formatedData",formatedData);
         // Execute validation
         const validationErrors = validateTransactions(formatedData);
         if (validationErrors.length > 0) {

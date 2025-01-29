@@ -103,9 +103,8 @@ export default function TransactionsPage(props: Props) {
     const onSubmitImport = async (
         values: any[]
     ) => {
-        console.log("createTransactionsQuery values",values);
-        // const bankId = await confirm();
 
+        // const bankId = await confirm();
         // if (!bankId) {
         //     return toast.error("Please select a bank to continue.");
         // }
@@ -114,8 +113,6 @@ export default function TransactionsPage(props: Props) {
             ...value,
             // bank: bankId as string,
         }))
-
-        console.log("createTransactionsQuery",data);
 
         createTransactionsQuery.mutate(data, {
             onSuccess: () => {
@@ -158,7 +155,6 @@ export default function TransactionsPage(props: Props) {
         )
     }
     
-    // TODO : refactor this
     // get all other case to display all transaction
     if (!hasPermission(user, "TRANSACTION-VALIDATE", "TRANSACTION-ASSIGN" , "TRANSACTION-VERIFIER")) {
         transactions = transactions.filter((transaction: any) => transaction.userId === user.id);

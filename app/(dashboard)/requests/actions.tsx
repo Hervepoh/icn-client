@@ -47,7 +47,7 @@ export const Actions = ({ id }: Props) => {
     const handleSubmit = async () => {
         // Perform QA on the data before submitting it to the server
         const QA = await unicityById(id);
-         console.log("QA",QA)
+
         // Function to handle data submission
         const submitData = (advice: boolean = false) => {
             // Execute the mutation to edit the data to Initiate a new transaction in the validation process
